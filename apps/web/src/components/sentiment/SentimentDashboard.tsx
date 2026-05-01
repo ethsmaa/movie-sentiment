@@ -3,6 +3,7 @@ import { HypeMeter } from './HypeMeter'
 import { ConfidenceGauge } from './ConfidenceGauge'
 import { DistributionChart } from './DistributionChart'
 import { TopReviewsPanel } from './TopReviewsPanel'
+import { TopWordsPanel } from '../analytics/TopWordsPanel'
 import { Loader2, AlertCircle } from 'lucide-react'
 
 interface SentimentDashboardProps {
@@ -75,6 +76,21 @@ export function SentimentDashboard({ movieId }: SentimentDashboardProps) {
           <TopReviewsPanel topReviews={topReviews} />
         </div>
       )}
+
+      <TopWordsSectionForMovie movieId={movieId} />
+    </div>
+  )
+}
+
+function TopWordsSectionForMovie({ movieId }: { movieId: string }) {
+  const topWordsQuery = trpc.sentiment.topWords.useQuery({ movieId, limit: 8 })
+  if (!topWordsQuery.data) return null
+  const { positive, negative } = topWordsQuery.data
+  if (positive.length === 0 && negative.length === 0) return null
+  return (
+    <div>
+      <h2 className="mb-4 text-base font-semibold text-text-primary">Key Sentiment Words</h2>
+      <TopWordsPanel data={topWordsQuery.data} />
     </div>
   )
 }

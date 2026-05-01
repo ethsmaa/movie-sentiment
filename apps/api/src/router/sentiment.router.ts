@@ -4,8 +4,11 @@ import {
   SentimentAnalyzeInputSchema,
   TopReviewsInputSchema,
   DistributionInputSchema,
+  TopWordsInputSchema,
+  ModelMetricsInputSchema,
 } from '../schemas/sentiment.schema.js'
 import { analyzeMovieSentiment } from '../services/sentiment.service.js'
+import { getTopWords, getModelMetrics } from '../services/analytics.service.js'
 import { prisma } from '../lib/prisma.js'
 import {
   SentimentLabel,
@@ -135,4 +138,12 @@ export const sentimentRouter = router({
         ],
       }
     }),
+
+  topWords: publicProcedure.input(TopWordsInputSchema).query(async ({ input }) => {
+    return getTopWords(input.movieId, input.limit)
+  }),
+
+  modelMetrics: publicProcedure.input(ModelMetricsInputSchema).query(async () => {
+    return getModelMetrics()
+  }),
 })

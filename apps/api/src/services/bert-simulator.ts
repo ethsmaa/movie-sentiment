@@ -3,6 +3,10 @@ import { POSITIVE_WORDS, NEGATIVE_WORDS, NEGATION_WORDS, NEGATION_WINDOW } from 
 
 const BERT_MODEL_VERSION_LOCAL = 'bert-sim-v1'
 
+const POSITIVE_SET = new Set<string>(POSITIVE_WORDS)
+const NEGATIVE_SET = new Set<string>(NEGATIVE_WORDS)
+const NEGATION_SET = new Set<string>(NEGATION_WORDS)
+
 export interface BertResult {
   label: SentimentLabel
   confidenceScore: number
@@ -42,15 +46,15 @@ export function analyzeSentiment(text: string, rating?: number): BertResult {
 
     const isNegated = tokens
       .slice(Math.max(0, i - NEGATION_WINDOW), i)
-      .some((t) => NEGATION_WORDS.includes(t))
+      .some((t) => NEGATION_SET.has(t))
 
-    if (POSITIVE_WORDS.includes(token)) {
+    if (POSITIVE_SET.has(token)) {
       if (isNegated) {
         negativeScore += 1.5
       } else {
         positiveScore += 1.5
       }
-    } else if (NEGATIVE_WORDS.includes(token)) {
+    } else if (NEGATIVE_SET.has(token)) {
       if (isNegated) {
         positiveScore += 1.2
       } else {

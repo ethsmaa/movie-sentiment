@@ -1,4 +1,4 @@
-import { SentimentLabel } from './constants'
+import type { SentimentLabel } from './constants'
 
 export interface MovieDTO {
   id: string
@@ -71,4 +71,44 @@ export interface PaginatedResponse<T> {
   total: number
   page: number
   limit: number
+}
+
+// --- Analytics types ---
+
+export interface TopWord {
+  word: string
+  count: number
+  /** 0–100, relative to the most frequent word in its group */
+  relativeWeight: number
+}
+
+export interface TopWordsDTO {
+  positive: TopWord[]
+  negative: TopWord[]
+  movieId?: string
+}
+
+export interface ClassMetrics {
+  label: SentimentLabel
+  precision: number
+  recall: number
+  f1: number
+  /** Number of ground-truth samples for this class */
+  support: number
+}
+
+export interface ConfusionMatrixDTO {
+  /** Row = actual label, Col = predicted label */
+  matrix: number[][]
+  labels: SentimentLabel[]
+}
+
+export interface ModelMetricsDTO {
+  classMetrics: ClassMetrics[]
+  weightedF1: number
+  accuracy: number
+  confusionMatrix: ConfusionMatrixDTO
+  /** Reviews that had a rating (used as ground truth) */
+  sampleSize: number
+  totalReviews: number
 }

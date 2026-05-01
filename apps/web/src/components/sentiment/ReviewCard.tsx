@@ -1,10 +1,44 @@
 import type { ReviewWithSentimentDTO } from '@movie-sentiment/shared'
+import { getTextSegments } from '@movie-sentiment/shared'
 import { SentimentLabelBadge } from './SentimentLabelBadge'
 import { SENTIMENT_COLORS } from '@movie-sentiment/shared'
 import { User } from 'lucide-react'
 
 interface ReviewCardProps {
   review: ReviewWithSentimentDTO
+}
+
+function HighlightedText({ text }: { text: string }) {
+  const segments = getTextSegments(text)
+  return (
+    <span>
+      {segments.map((seg, i) => {
+        if (seg.highlight === 'positive') {
+          return (
+            <mark
+              key={i}
+              className="rounded px-0.5 text-positive"
+              style={{ background: 'rgba(62, 207, 142, 0.15)' }}
+            >
+              {seg.text}
+            </mark>
+          )
+        }
+        if (seg.highlight === 'negative') {
+          return (
+            <mark
+              key={i}
+              className="rounded px-0.5 text-negative"
+              style={{ background: 'rgba(229, 72, 77, 0.15)' }}
+            >
+              {seg.text}
+            </mark>
+          )
+        }
+        return <span key={i}>{seg.text}</span>
+      })}
+    </span>
+  )
 }
 
 export function ReviewCard({ review }: ReviewCardProps) {
@@ -31,7 +65,9 @@ export function ReviewCard({ review }: ReviewCardProps) {
           {label && <SentimentLabelBadge label={label} />}
         </div>
       </div>
-      <p className="line-clamp-4 text-sm leading-relaxed text-text-muted">{review.text}</p>
+      <p className="line-clamp-4 text-sm leading-relaxed text-text-muted">
+        {label ? <HighlightedText text={review.text} /> : review.text}
+      </p>
       {confidence !== undefined && (
         <div className="flex items-center gap-2">
           <div className="h-1 flex-1 rounded-full bg-background overflow-hidden">
