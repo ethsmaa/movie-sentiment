@@ -1,0 +1,19 @@
+{
+  "name": "movie-sentiment",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "pnpm --parallel --filter './apps/*' dev",
+    "build": "pnpm --filter './packages/*' build && pnpm --filter './apps/*' build",
+    "test": "pnpm --filter './apps/*' --filter './packages/*' test",
+    "lint": "pnpm --filter './apps/*' --filter './packages/*' lint",
+    "typecheck": "pnpm --filter './apps/*' --filter './packages/*' typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
