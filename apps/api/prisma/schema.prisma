@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SentimentLabel {
+  positive
+  negative
+  neutral
+}
+
+model Movie {
+  id            String   @id @default(cuid())
+  externalId    String   @unique
+  title         String
+  originalTitle String?
+  year          Int
+  posterUrl     String
+  backdropUrl   String?
+  overview      String
+  genres        String[]
+  language      String
+  runtime       Int?
+  voteAverage   Float?
+  reviews       Review[]
+  summary       MovieSentimentSummary?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("movies")
+}
+
+model Review {
+  id         String    @id @default(cuid())
+  externalId String    @unique
+  movieId    String
+  movie      Movie     @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  author     String
+  text       String
+  rating     Float?
+  createdAt  DateTime  @default(now())
+  analysis   SentimentAnalysis?
+
+  @@map("reviews")
+}
+
+model SentimentAnalysis {
+  id              String         @id @default(cuid())
+  reviewId        String         @unique
+  review          Review         @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  label           SentimentLabel
+  confidenceScore Float
+  positiveProb    Float
+  negativeProb    Float
+  neutralProb     Float
+  modelVersion    String         @default("bert-sim-v1")
+  createdAt       DateTime       @default(now())
+
+  @@map("sentiment_analyses")
+}
+
+model MovieSentimentSummary {
+  movieId           String   @id
+  movie             Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  totalReviews      Int
+  positiveCount     Int
+  negativeCount     Int
+  neutralCount      Int
+  averageConfidence Float
+  hypeScore         Float
+  computedAt        DateTime
+
+  @@map("movie_sentiment_summaries")
+}
