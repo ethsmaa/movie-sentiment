@@ -1,0 +1,183 @@
+{
+  "model": {
+    "base": "distilbert-base-uncased",
+    "trained_on": "imdb",
+    "num_labels": 2,
+    "labels": [
+      "negative",
+      "positive"
+    ],
+    "max_length": 256,
+    "epochs": 3,
+    "batch_size": 16,
+    "learning_rate": 2e-05,
+    "trained_at": "2026-05-06T12:02:11.776438+00:00",
+    "training_time_seconds": 858.6
+  },
+  "eval": {
+    "accuracy": 0.91508,
+    "weightedF1": 0.9150789237442479,
+    "weightedPrecision": 0.9151010432983294,
+    "weightedRecall": 0.91508,
+    "sampleSize": 25000,
+    "totalReviews": 25000,
+    "classMetrics": [
+      {
+        "label": "negative",
+        "precision": 0.9180565627266135,
+        "recall": 0.91152,
+        "f1": 0.9147766047127774,
+        "support": 12500
+      },
+      {
+        "label": "positive",
+        "precision": 0.9121455238700453,
+        "recall": 0.91864,
+        "f1": 0.9153812427757184,
+        "support": 12500
+      }
+    ],
+    "confusionMatrix": {
+      "matrix": [
+        [
+          11394,
+          1106
+        ],
+        [
+          1017,
+          11483
+        ]
+      ],
+      "labels": [
+        "negative",
+        "positive"
+      ]
+    }
+  },
+  "topWords": {
+    "positive": [
+      {
+        "word": "great",
+        "score": 0.0124978500726388
+      },
+      {
+        "word": "best",
+        "score": 0.007986407547099
+      },
+      {
+        "word": "love",
+        "score": 0.007783943747463639
+      },
+      {
+        "word": "excellent",
+        "score": 0.007500396821332725
+      },
+      {
+        "word": "wonderful",
+        "score": 0.006610888911298896
+      },
+      {
+        "word": "loved",
+        "score": 0.00505940234538052
+      },
+      {
+        "word": "perfect",
+        "score": 0.005041076553672956
+      },
+      {
+        "word": "amazing",
+        "score": 0.004967683158273142
+      },
+      {
+        "word": "beautiful",
+        "score": 0.004937856893319822
+      },
+      {
+        "word": "life",
+        "score": 0.004704870849726371
+      },
+      {
+        "word": "favorite",
+        "score": 0.004561064445327051
+      },
+      {
+        "word": "family",
+        "score": 0.004088992128529649
+      },
+      {
+        "word": "world",
+        "score": 0.003962154665553025
+      },
+      {
+        "word": "performance",
+        "score": 0.003953454701781344
+      },
+      {
+        "word": "enjoyed",
+        "score": 0.003895849858966164
+      }
+    ],
+    "negative": [
+      {
+        "word": "bad",
+        "score": 0.018761842094242056
+      },
+      {
+        "word": "worst",
+        "score": 0.013123793236896284
+      },
+      {
+        "word": "waste",
+        "score": 0.009390664216543644
+      },
+      {
+        "word": "awful",
+        "score": 0.00867801487436581
+      },
+      {
+        "word": "movie",
+        "score": 0.007761093469862132
+      },
+      {
+        "word": "just",
+        "score": 0.007648155603875117
+      },
+      {
+        "word": "plot",
+        "score": 0.007611459888539661
+      },
+      {
+        "word": "terrible",
+        "score": 0.007610004958655319
+      },
+      {
+        "word": "boring",
+        "score": 0.007229906176630854
+      },
+      {
+        "word": "acting",
+        "score": 0.007127594314702973
+      },
+      {
+        "word": "stupid",
+        "score": 0.006805820386337384
+      },
+      {
+        "word": "worse",
+        "score": 0.006649634070426892
+      },
+      {
+        "word": "minutes",
+        "score": 0.006648151601567272
+      },
+      {
+        "word": "don",
+        "score": 0.006618179495510882
+      },
+      {
+        "word": "horrible",
+        "score": 0.006218212301200574
+      }
+    ]
+  }
+}
