@@ -24,3 +24,7 @@ export const TopWordsInputSchema = z.object({
 })
 
 export const ModelMetricsInputSchema = z.object({})
+
+export const AnalyzeTextInputSchema = z.object({
+  text: z.string().min(1).max(10_000),
+})

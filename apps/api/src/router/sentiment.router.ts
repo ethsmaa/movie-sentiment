@@ -6,8 +6,11 @@ import {
   DistributionInputSchema,
   TopWordsInputSchema,
   ModelMetricsInputSchema,
+  AnalyzeTextInputSchema,
 } from '../schemas/sentiment.schema.js'
 import { analyzeMovieSentiment } from '../services/sentiment.service.js'
+import { predict as predictText } from '../services/bert-client.js'
+import { analyzeSentiment as simulatorAnalyze } from '../services/bert-simulator.js'
 import { getTopWords, getModelMetrics } from '../services/analytics.service.js'
 import { prisma } from '../lib/prisma.js'
 import {
@@ -80,6 +83,22 @@ export const sentimentRouter = router({
   analyze: publicProcedure.input(SentimentAnalyzeInputSchema).mutation(async ({ input }) => {
     return analyzeMovieSentiment(input.movieId, input.force)
   }),
+
+  analyzeText: publicProcedure
+    .input(AnalyzeTextInputSchema)
+    .mutation(async ({ input }) => {
+      // Try the trained model first, fall back to the lexicon simulator if the
+      // sidecar is unreachable so the analyzer never breaks for a demo viewer.
+      try {
+        return await predictText(input.text)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'unknown error'
+        console.warn(
+          `[sentiment] analyzeText falling back to simulator (${message})`,
+        )
+        return simulatorAnalyze(input.text)
+      }
+    }),
 
   topReviews: publicProcedure
     .input(TopReviewsInputSchema)
