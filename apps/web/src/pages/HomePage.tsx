@@ -24,6 +24,7 @@ const FALLBACK_GENRES = ['ALL', 'DRAMA', 'COMEDY', 'ACTION', 'SCI-FI', 'HORROR',
 export function HomePage() {
   const { filter, setSearch, setGenre } = useMoviesStore()
   const { data: genreList } = trpc.movies.genres.useQuery()
+  const { data: stats } = trpc.movies.stats.useQuery()
   const [localSearch, setLocalSearch] = useState(filter.search)
 
   const displayGenres = genreList
@@ -73,7 +74,10 @@ export function HomePage() {
           </div>
 
           {/* Right: ADMIT ONE ticket */}
-          <AdmitOneTicket />
+          <AdmitOneTicket
+            movieCount={stats?.movieCount ?? 0}
+            reviewCount={stats?.reviewCount ?? 0}
+          />
         </div>
       </section>
 
@@ -127,7 +131,7 @@ export function HomePage() {
           THE COLLECTION
         </div>
         <div className="font-mono text-ink-soft text-meta tracking-[1px]">
-          SORTED BY HYPE
+          {stats?.movieCount ? `${stats.movieCount} TITLES · ` : ''}SORTED BY HYPE
         </div>
       </div>
 
@@ -140,7 +144,12 @@ export function HomePage() {
   )
 }
 
-function AdmitOneTicket() {
+interface AdmitOneTicketProps {
+  movieCount: number
+  reviewCount: number
+}
+
+function AdmitOneTicket({ movieCount, reviewCount }: AdmitOneTicketProps) {
   return (
     <div className="relative bg-amber border-2 border-ink shadow-vhs shrink-0"
       style={{ padding: '14px 20px', minWidth: 220 }}>
@@ -154,8 +163,8 @@ function AdmitOneTicket() {
       <div className="font-mono text-ink text-meta-xxs tracking-[1.5px]">NO. 4672698</div>
       <div className="font-display text-ink mt-1" style={{ fontSize: 32, lineHeight: 1 }}>ADMIT ONE</div>
       <div className="font-mono text-ink text-meta-xs border-t border-dashed border-ink mt-2 pt-1.5 flex justify-between">
-        <span>FILMS · 20</span>
-        <span>REVIEWS · 346</span>
+        <span>FILMS · {movieCount}</span>
+        <span>REVIEWS · {reviewCount}</span>
       </div>
     </div>
   )
