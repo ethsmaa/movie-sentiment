@@ -36,7 +36,7 @@ export function ModelMetricsPage() {
     )
   }
 
-  const { classMetrics, weightedF1, accuracy, confusionMatrix, sampleSize, totalReviews } =
+  const { classMetrics, weightedF1, accuracy, confusionMatrix, sampleSize, totalReviews, modelInfo } =
     metricsQ.data
 
   const accPct = (accuracy * 100).toFixed(1)
@@ -63,7 +63,9 @@ export function ModelMetricsPage() {
               Model Metrics
             </h1>
             <div className="font-serif italic text-ink-soft mt-1.5" style={{ fontSize: 18 }}>
-              BERT sentiment classifier — ground truth derived from user ratings.
+              {modelInfo
+                ? `${modelInfo.base} fine-tuned on ${modelInfo.trainedOn} · ${modelInfo.epochs} epochs`
+                : 'BERT sentiment classifier — ground truth derived from user ratings.'}
             </div>
           </div>
 
@@ -109,7 +111,7 @@ export function ModelMetricsPage() {
               PRECISION · RECALL · F1
             </div>
           </div>
-          <div className="grid gap-3.5" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+          <div className="grid gap-3.5" style={{ gridTemplateColumns: `repeat(${Math.max(classMetrics.length, 1)}, 1fr)` }}>
             {classMetrics.map((m) => (
               <ClassMetricsCard key={m.label} metrics={m} />
             ))}
@@ -147,7 +149,7 @@ export function ModelMetricsPage() {
         )}
       </div>
 
-      <VideoClubFooter right="BERT-base-uncased · sim">
+      <VideoClubFooter right={modelInfo ? `${modelInfo.base} · trained ${modelInfo.trainedAt.slice(0, 10)}` : 'BERT-base-uncased'}>
         ★ LAB SHEET CINESENTIMENT/QC-001 ★ INTERNAL USE ONLY ★
       </VideoClubFooter>
     </main>

@@ -1,8 +1,8 @@
-import type { ClassMetrics, ConfusionMatrixDTO, ModelMetricsDTO, TopWordsDTO } from '@movie-sentiment/shared'
+import type { ModelMetricsDTO, TopWordsDTO } from '@movie-sentiment/shared'
 import { NEGATIVE_WORDS, POSITIVE_WORDS, SentimentLabel } from '@movie-sentiment/shared'
 import { prisma } from '../lib/prisma.js'
+import { getCorpusTopWords, getTrainedModelMetrics } from './training-metrics.js'
 
-const LABELS = [SentimentLabel.positive, SentimentLabel.negative, SentimentLabel.neutral]
 const POSITIVE_SET = new Set<string>(POSITIVE_WORDS)
 const NEGATIVE_SET = new Set<string>(NEGATIVE_WORDS)
 
@@ -14,15 +14,15 @@ function tokenize(text: string): string[] {
     .filter((t) => t.length > 0)
 }
 
-function ratingToGroundTruth(rating: number): SentimentLabel {
-  if (rating >= 7) return SentimentLabel.positive
-  if (rating <= 3) return SentimentLabel.negative
-  return SentimentLabel.neutral
-}
-
 export async function getTopWords(movieId?: string, limit = 10): Promise<TopWordsDTO> {
+  // Corpus-level top words come from the trained model's TF-IDF — those are the
+  // words the actual classifier learned to distinguish positive vs negative on.
+  if (!movieId) {
+    return getCorpusTopWords(limit)
+  }
+
   const reviews = await prisma.review.findMany({
-    ...(movieId ? { where: { movieId } } : {}),
+    where: { movieId },
     select: { text: true, analysis: { select: { label: true } } },
   })
 
@@ -68,24 +68,33 @@ export async function getTopWords(movieId?: string, limit = 10): Promise<TopWord
 }
 
 export async function getModelMetrics(): Promise<ModelMetricsDTO> {
+  // Phase 5: training-time metrics from ml/metrics.json are the source of
+  // truth. The previous DB-derived calculation used user-rating-as-ground-truth
+  // which is a different evaluation than what the trained model was scored on.
+  return getTrainedModelMetrics()
+}
+
+// Legacy DB-derived metrics retained for the test suite that exercises the
+// confusion-matrix shape against generated data. Not used at runtime.
+export async function _getModelMetricsFromDB_DEPRECATED(): Promise<ModelMetricsDTO> {
   const analyses = await prisma.sentimentAnalysis.findMany({
     include: { review: { select: { rating: true } } },
   })
 
+  const labels = [SentimentLabel.positive, SentimentLabel.negative, SentimentLabel.neutral]
   const withRating = analyses.filter((a) => a.review.rating !== null)
   const sampleSize = withRating.length
   const totalReviews = analyses.length
 
-  // 3×3 confusion matrix: matrix[actualIdx][predictedIdx]
-  const matrix: number[][] = LABELS.map(() => LABELS.map(() => 0))
+  const matrix: number[][] = labels.map(() => labels.map(() => 0))
 
   for (const analysis of withRating) {
     const rating = analysis.review.rating ?? 5
-    const actual = ratingToGroundTruth(rating)
+    const actual = rating >= 7 ? SentimentLabel.positive : rating <= 3 ? SentimentLabel.negative : SentimentLabel.neutral
     const predicted = analysis.label as SentimentLabel
 
-    const actualIdx = LABELS.indexOf(actual)
-    const predictedIdx = LABELS.indexOf(predicted)
+    const actualIdx = labels.indexOf(actual)
+    const predictedIdx = labels.indexOf(predicted)
     if (actualIdx !== -1 && predictedIdx !== -1) {
       const row = matrix[actualIdx]
       if (row) {
@@ -94,10 +103,10 @@ export async function getModelMetrics(): Promise<ModelMetricsDTO> {
     }
   }
 
-  const classMetrics: ClassMetrics[] = LABELS.map((label, i) => {
+  const classMetrics = labels.map((label, i) => {
     const tp = matrix[i]?.[i] ?? 0
-    const fp = LABELS.reduce((sum, _, j) => (j !== i ? sum + (matrix[j]?.[i] ?? 0) : sum), 0)
-    const fn = LABELS.reduce((sum, _, j) => (j !== i ? sum + (matrix[i]?.[j] ?? 0) : sum), 0)
+    const fp = labels.reduce((sum, _, j) => (j !== i ? sum + (matrix[j]?.[i] ?? 0) : sum), 0)
+    const fn = labels.reduce((sum, _, j) => (j !== i ? sum + (matrix[i]?.[j] ?? 0) : sum), 0)
     const support = (matrix[i] ?? []).reduce((a: number, b: number) => a + b, 0)
 
     const precision = tp + fp > 0 ? tp / (tp + fp) : 0
@@ -113,16 +122,14 @@ export async function getModelMetrics(): Promise<ModelMetricsDTO> {
       ? classMetrics.reduce((s, m) => s + m.f1 * m.support, 0) / totalSupport
       : 0
 
-  const correctPredictions = LABELS.reduce((s, _, i) => s + (matrix[i]?.[i] ?? 0), 0)
+  const correctPredictions = labels.reduce((s, _, i) => s + (matrix[i]?.[i] ?? 0), 0)
   const accuracy = sampleSize > 0 ? correctPredictions / sampleSize : 0
-
-  const confusionMatrix: ConfusionMatrixDTO = { matrix, labels: LABELS }
 
   return {
     classMetrics,
     weightedF1,
     accuracy,
-    confusionMatrix,
+    confusionMatrix: { matrix, labels },
     sampleSize,
     totalReviews,
   }

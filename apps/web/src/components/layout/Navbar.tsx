@@ -42,7 +42,7 @@ export function VideoClubHeader() {
           Model Metrics
         </Link>
         <div className="font-mono text-ink-soft text-meta-sm tracking-[1px]">
-          BERT · SIMULATED
+          DISTILBERT · IMDB
         </div>
       </div>
     </header>

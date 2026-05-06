@@ -5,7 +5,9 @@
     "year": 1994,
     "posterUrl": "https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg",
     "overview": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
-    "genres": ["Drama"],
+    "genres": [
+      "Drama"
+    ],
     "language": "en",
     "runtime": 142,
     "voteAverage": 9.3
@@ -14,9 +16,12 @@
     "externalId": "tt0068646",
     "title": "The Godfather",
     "year": 1972,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsLegHnDcdh9.jpg",
+    "posterUrl": "https://upload.wikimedia.org/wikipedia/en/1/1c/Godfather_ver1.jpg",
     "overview": "The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.",
-    "genres": ["Crime", "Drama"],
+    "genres": [
+      "Crime",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 175,
     "voteAverage": 9.2
@@ -27,7 +32,11 @@
     "year": 2008,
     "posterUrl": "https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
     "overview": "When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.",
-    "genres": ["Action", "Crime", "Drama"],
+    "genres": [
+      "Action",
+      "Crime",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 152,
     "voteAverage": 9.0
@@ -38,7 +47,11 @@
     "year": 1993,
     "posterUrl": "https://image.tmdb.org/t/p/w500/sF1U4EUQS8YHUYjNl3pMGNIQyr0.jpg",
     "overview": "In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.",
-    "genres": ["Biography", "Drama", "History"],
+    "genres": [
+      "Biography",
+      "Drama",
+      "History"
+    ],
     "language": "en",
     "runtime": 195,
     "voteAverage": 8.9
@@ -49,7 +62,10 @@
     "year": 1994,
     "posterUrl": "https://image.tmdb.org/t/p/w500/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg",
     "overview": "The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.",
-    "genres": ["Crime", "Drama"],
+    "genres": [
+      "Crime",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 154,
     "voteAverage": 8.9
@@ -60,7 +76,11 @@
     "year": 2003,
     "posterUrl": "https://image.tmdb.org/t/p/w500/rCzpDGLbOoPwLjy3OAm5NUPOTrC.jpg",
     "overview": "Gandalf and Aragorn lead the World of Men against Sauron's army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.",
-    "genres": ["Action", "Adventure", "Drama"],
+    "genres": [
+      "Action",
+      "Adventure",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 201,
     "voteAverage": 8.9
@@ -71,7 +91,10 @@
     "year": 1994,
     "posterUrl": "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg",
     "overview": "The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an extraordinary gift.",
-    "genres": ["Drama", "Romance"],
+    "genres": [
+      "Drama",
+      "Romance"
+    ],
     "language": "en",
     "runtime": 142,
     "voteAverage": 8.8
@@ -82,7 +105,11 @@
     "year": 2010,
     "posterUrl": "https://image.tmdb.org/t/p/w500/ljsZTbVsrQSqZgWeep2B1QiDKuh.jpg",
     "overview": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.",
-    "genres": ["Action", "Adventure", "Sci-Fi"],
+    "genres": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 148,
     "voteAverage": 8.8
@@ -93,7 +120,10 @@
     "year": 1999,
     "posterUrl": "https://image.tmdb.org/t/p/w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",
     "overview": "When a beautiful stranger leads computer hacker Neo to a forbidding underworld, he discovers the shocking truth--the life he knows is the elaborate deception of an evil cyber-intelligence.",
-    "genres": ["Action", "Sci-Fi"],
+    "genres": [
+      "Action",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 136,
     "voteAverage": 8.7
@@ -104,7 +134,11 @@
     "year": 1990,
     "posterUrl": "https://image.tmdb.org/t/p/w500/aKuFiU82s5ISJpGZp7YkIr3kCUd.jpg",
     "overview": "The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.",
-    "genres": ["Biography", "Crime", "Drama"],
+    "genres": [
+      "Biography",
+      "Crime",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 146,
     "voteAverage": 8.7
@@ -115,7 +149,11 @@
     "year": 2019,
     "posterUrl": "https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
     "overview": "Greed and class discrimination threaten the newly formed symbiotic relationship between the wealthy Park family and the destitute Kim clan.",
-    "genres": ["Comedy", "Drama", "Thriller"],
+    "genres": [
+      "Comedy",
+      "Drama",
+      "Thriller"
+    ],
     "language": "ko",
     "runtime": 132,
     "voteAverage": 8.6
@@ -126,7 +164,11 @@
     "year": 2014,
     "posterUrl": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
     "overview": "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
-    "genres": ["Adventure", "Drama", "Sci-Fi"],
+    "genres": [
+      "Adventure",
+      "Drama",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 169,
     "voteAverage": 8.6
@@ -138,7 +180,11 @@
     "year": 2001,
     "posterUrl": "https://image.tmdb.org/t/p/w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
     "overview": "During her family's move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, and where humans are changed into beasts.",
-    "genres": ["Animation", "Adventure", "Family"],
+    "genres": [
+      "Animation",
+      "Adventure",
+      "Family"
+    ],
     "language": "ja",
     "runtime": 125,
     "voteAverage": 8.6
@@ -149,7 +195,11 @@
     "year": 1991,
     "posterUrl": "https://image.tmdb.org/t/p/w500/uS9m8OBk1A8eM9I042bx8XXpqAq.jpg",
     "overview": "A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer.",
-    "genres": ["Crime", "Drama", "Thriller"],
+    "genres": [
+      "Crime",
+      "Drama",
+      "Thriller"
+    ],
     "language": "en",
     "runtime": 118,
     "voteAverage": 8.6
@@ -160,7 +210,10 @@
     "year": 1998,
     "posterUrl": "https://image.tmdb.org/t/p/w500/uqx37cS8cpHg8U35f9U5IBlrCV3.jpg",
     "overview": "Following the Normandy Landings, a group of U.S. soldiers go behind enemy lines to retrieve a paratrooper whose brothers have been killed in action.",
-    "genres": ["Drama", "War"],
+    "genres": [
+      "Drama",
+      "War"
+    ],
     "language": "en",
     "runtime": 169,
     "voteAverage": 8.6
@@ -171,7 +224,10 @@
     "year": 1957,
     "posterUrl": "https://image.tmdb.org/t/p/w500/ppd84D2i9W8jXmsyInGyihiSyqz.jpg",
     "overview": "The jury in a New York City murder trial is frustrated by a single member whose skeptical caution forces them to more carefully consider the evidence before jumping to a hasty verdict.",
-    "genres": ["Crime", "Drama"],
+    "genres": [
+      "Crime",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 96,
     "voteAverage": 9.0
@@ -180,9 +236,13 @@
     "externalId": "tt0110357",
     "title": "The Lion King",
     "year": 1994,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/sKCr78MXSuC27v5QGBmmPATLtkh.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/sKCr78MXSLixwmZ8DyJLrpMsd15.jpg",
     "overview": "Lion prince Simba and his father are targeted by his bitter uncle, who wants to ascend the throne himself.",
-    "genres": ["Animation", "Adventure", "Drama"],
+    "genres": [
+      "Animation",
+      "Adventure",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 88,
     "voteAverage": 8.5
@@ -193,7 +253,11 @@
     "year": 2000,
     "posterUrl": "https://image.tmdb.org/t/p/w500/ty8TGRuvJLPUmAR1H1nRIsgwvim.jpg",
     "overview": "A former Roman General sets out to exact vengeance against the corrupt emperor who murdered his family and sent him into slavery.",
-    "genres": ["Action", "Adventure", "Drama"],
+    "genres": [
+      "Action",
+      "Adventure",
+      "Drama"
+    ],
     "language": "en",
     "runtime": 155,
     "voteAverage": 8.5
@@ -202,9 +266,13 @@
     "externalId": "tt0482571",
     "title": "The Prestige",
     "year": 2006,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/5MXyQfz8xUP3dIFPTubhTsbFY6N.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/tRNlZbgNCNOpLpbPEz5L8G8A0JN.jpg",
     "overview": "After a tragic accident, two stage magicians in 1890s London engage in a battle to create the ultimate illusion while sacrificing everything they have to outwit each other.",
-    "genres": ["Drama", "Mystery", "Sci-Fi"],
+    "genres": [
+      "Drama",
+      "Mystery",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 130,
     "voteAverage": 8.5
@@ -213,9 +281,12 @@
     "externalId": "tt0209144",
     "title": "Memento",
     "year": 2000,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/yuNs09TGnjBuEpAvr8SbnLd79Q1.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/yuNs09hvpHVU1cBTCAk9zxsL2oW.jpg",
     "overview": "A man with short-term memory loss attempts to track down his wife's murderer.",
-    "genres": ["Mystery", "Thriller"],
+    "genres": [
+      "Mystery",
+      "Thriller"
+    ],
     "language": "en",
     "runtime": 113,
     "voteAverage": 8.4
@@ -227,7 +298,10 @@
     "year": 2002,
     "posterUrl": "https://image.tmdb.org/t/p/w500/k7eYdWvhYQyRQoU2TB2A2Xu2grZ.jpg",
     "overview": "In the slums of Rio de Janeiro in the 1970s, two kids take different paths: one becomes a photographer and the other a drug dealer.",
-    "genres": ["Crime", "Drama"],
+    "genres": [
+      "Crime",
+      "Drama"
+    ],
     "language": "pt",
     "runtime": 130,
     "voteAverage": 8.6
@@ -236,9 +310,12 @@
     "externalId": "tt2582802",
     "title": "Whiplash",
     "year": 2014,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/oPRd3nuBHEoVJzM6Cl3UpZmFGEU.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/7fn624j5lj3xTme2SgiLCeuedmO.jpg",
     "overview": "A promising young drummer enrolls at a cut-throat music conservatory where his dreams of greatness are mentored by an instructor who will stop at nothing to realize a student's potential.",
-    "genres": ["Drama", "Music"],
+    "genres": [
+      "Drama",
+      "Music"
+    ],
     "language": "en",
     "runtime": 106,
     "voteAverage": 8.5
@@ -249,7 +326,11 @@
     "year": 2014,
     "posterUrl": "https://image.tmdb.org/t/p/w500/eWdyYQreja6JGCzqHWXpWHDrrPo.jpg",
     "overview": "A writer encounters the owner of an aging European hotel between the wars and learns of his early years serving as a lobby boy in the hotel's glorious years under an exceptional concierge.",
-    "genres": ["Adventure", "Comedy", "Crime"],
+    "genres": [
+      "Adventure",
+      "Comedy",
+      "Crime"
+    ],
     "language": "en",
     "runtime": 99,
     "voteAverage": 8.1
@@ -260,7 +341,11 @@
     "year": 2015,
     "posterUrl": "https://image.tmdb.org/t/p/w500/8tZYtuWezp8JbcsvHYO0O46tFbo.jpg",
     "overview": "In a post-apocalyptic wasteland, a woman rebels against a tyrannical ruler in search for her homeland with the aid of a group of female prisoners, a psychotic worshiper, and a drifter named Max.",
-    "genres": ["Action", "Adventure", "Sci-Fi"],
+    "genres": [
+      "Action",
+      "Adventure",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 120,
     "voteAverage": 8.1
@@ -271,7 +356,11 @@
     "year": 2016,
     "posterUrl": "https://image.tmdb.org/t/p/w500/x2FJsf1ElAgr63Y3PNPtJrcmpoe.jpg",
     "overview": "A linguist works with the military to communicate with alien lifeforms after twelve mysterious spacecraft appear around the world.",
-    "genres": ["Drama", "Mystery", "Sci-Fi"],
+    "genres": [
+      "Drama",
+      "Mystery",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 116,
     "voteAverage": 7.9
@@ -282,7 +371,11 @@
     "year": 2017,
     "posterUrl": "https://image.tmdb.org/t/p/w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",
     "overview": "A young African-American visits his white girlfriend's parents for the weekend, where his simmering uneasiness about their reception of him eventually reaches a boiling point.",
-    "genres": ["Horror", "Mystery", "Thriller"],
+    "genres": [
+      "Horror",
+      "Mystery",
+      "Thriller"
+    ],
     "language": "en",
     "runtime": 104,
     "voteAverage": 7.7
@@ -293,7 +386,11 @@
     "year": 2022,
     "posterUrl": "https://image.tmdb.org/t/p/w500/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",
     "overview": "An aging Chinese immigrant is swept up in an insane adventure, where she alone can save the world by exploring other universes connecting with the lives she could have led.",
-    "genres": ["Action", "Adventure", "Comedy"],
+    "genres": [
+      "Action",
+      "Adventure",
+      "Comedy"
+    ],
     "language": "en",
     "runtime": 139,
     "voteAverage": 7.8
@@ -302,9 +399,13 @@
     "externalId": "tt0477348",
     "title": "No Country for Old Men",
     "year": 2007,
-    "posterUrl": "https://image.tmdb.org/t/p/w500/6d9OMgPlo4gHEfNwBRVKrm0CQCL.jpg",
+    "posterUrl": "https://image.tmdb.org/t/p/w500/bj1v6YKF8yHqA489VFfnQvOJpnc.jpg",
     "overview": "Violence and mayhem ensue after a hunter stumbles upon a drug deal gone wrong and more than two million dollars in cash near the Rio Grande.",
-    "genres": ["Crime", "Drama", "Thriller"],
+    "genres": [
+      "Crime",
+      "Drama",
+      "Thriller"
+    ],
     "language": "en",
     "runtime": 122,
     "voteAverage": 8.2
@@ -315,7 +416,9 @@
     "year": 2007,
     "posterUrl": "https://image.tmdb.org/t/p/w500/fa0RDkAlCec0STeMNAhPaF89q6U.jpg",
     "overview": "A story of family, religion, hatred, oil and madness, focusing on a ruthless prospector, plainsmen and an evangelical preacher in the early 20th century.",
-    "genres": ["Drama"],
+    "genres": [
+      "Drama"
+    ],
     "language": "en",
     "runtime": 158,
     "voteAverage": 8.2
@@ -326,7 +429,11 @@
     "year": 2017,
     "posterUrl": "https://image.tmdb.org/t/p/w500/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg",
     "overview": "Young Blade Runner K's discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard, who's been missing for thirty years.",
-    "genres": ["Drama", "Mystery", "Sci-Fi"],
+    "genres": [
+      "Drama",
+      "Mystery",
+      "Sci-Fi"
+    ],
     "language": "en",
     "runtime": 164,
     "voteAverage": 8.0
