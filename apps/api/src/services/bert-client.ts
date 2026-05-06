@@ -150,6 +150,73 @@ export async function predict(text: string): Promise<BertResult> {
   return result
 }
 
+export interface ProgressiveStep {
+  step: number
+  tokenIndex: number
+  prefixText: string
+  pPositive: number
+  pNegative: number
+  label: 'positive' | 'negative'
+  confidence: number
+}
+
+export interface ProgressiveTrajectory {
+  totalTokens: number
+  maxInputTokens: number
+  steps: ProgressiveStep[]
+}
+
+interface RawProgressiveStep {
+  step: number
+  token_index: number
+  prefix_text: string
+  p_positive: number
+  p_negative: number
+  label: 'positive' | 'negative'
+  confidence: number
+}
+
+interface RawProgressiveResponse {
+  total_tokens: number
+  max_input_tokens: number
+  steps: RawProgressiveStep[]
+}
+
+/**
+ * Run prefix inference for visualization. Always hits the live service —
+ * trajectories are larger than single predictions and rarely repeat, so we
+ * skip the cache. Throws on transport errors so callers can surface a
+ * graceful failure to the UI.
+ */
+export async function predictProgressive(text: string): Promise<ProgressiveTrajectory> {
+  const response = await fetch(`${SENTIMENT_SERVICE_URL}/predict/progressive`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  })
+
+  if (!response.ok) {
+    throw new Error(
+      `Sentiment service /predict/progressive returned ${response.status} ${response.statusText}`,
+    )
+  }
+
+  const raw = (await response.json()) as RawProgressiveResponse
+  return {
+    totalTokens: raw.total_tokens,
+    maxInputTokens: raw.max_input_tokens,
+    steps: raw.steps.map((s) => ({
+      step: s.step,
+      tokenIndex: s.token_index,
+      prefixText: s.prefix_text,
+      pPositive: s.p_positive,
+      pNegative: s.p_negative,
+      label: s.label,
+      confidence: s.confidence,
+    })),
+  }
+}
+
 export async function health(): Promise<RemoteHealth> {
   const response = await fetch(`${SENTIMENT_SERVICE_URL}/health`)
   if (!response.ok) {

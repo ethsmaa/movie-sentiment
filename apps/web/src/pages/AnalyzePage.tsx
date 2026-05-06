@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { trpc } from '../lib/trpc'
 import { getTextSegments, type SentimentLabel } from '@movie-sentiment/shared'
+import { ReadingPlayback } from '../components/analyze/ReadingPlayback'
 import { VideoClubFooter } from './HomePage'
 
 const HIGHLIGHT_COLORS = {
@@ -25,20 +26,29 @@ const SAMPLE_REVIEWS = [
 export function AnalyzePage() {
   const [text, setText] = useState('')
   const analyzeMutation = trpc.sentiment.analyzeText.useMutation()
+  const progressiveMutation = trpc.sentiment.analyzeProgressive.useMutation()
 
   const result = analyzeMutation.data
+  const trajectory = progressiveMutation.data
   const segments = result ? getTextSegments(text) : []
   const overLimit = text.length > MAX_LEN
   const canSubmit = text.trim().length > 0 && !overLimit && !analyzeMutation.isPending
 
   const handleAnalyze = () => {
     if (!canSubmit) return
+    progressiveMutation.reset()
     analyzeMutation.mutate({ text: text.trim() })
+  }
+
+  const handleWatchRead = () => {
+    if (!result) return
+    progressiveMutation.mutate({ text: text.trim() })
   }
 
   const handleSample = (sample: string) => {
     setText(sample)
     analyzeMutation.reset()
+    progressiveMutation.reset()
   }
 
   return (
@@ -115,6 +125,7 @@ export function AnalyzePage() {
                 onClick={() => {
                   setText('')
                   analyzeMutation.reset()
+                  progressiveMutation.reset()
                 }}
                 className="font-mono text-meta uppercase tracking-[1.4px] border border-ink text-ink hover:bg-paper-dark cursor-pointer bg-transparent"
                 style={{ padding: '10px 16px' }}
@@ -172,13 +183,47 @@ export function AnalyzePage() {
                 </div>
               </div>
             ) : result ? (
-              <ResultPanel
-                label={result.label as SentimentLabel}
-                confidence={result.confidenceScore}
-                pPositive={result.positiveProb}
-                pNegative={result.negativeProb}
-                segments={segments}
-              />
+              <>
+                <ResultPanel
+                  label={result.label as SentimentLabel}
+                  confidence={result.confidenceScore}
+                  pPositive={result.positiveProb}
+                  pNegative={result.negativeProb}
+                  segments={segments}
+                />
+
+                {/* Watch-it-read affordance */}
+                {!trajectory && (
+                  <button
+                    onClick={handleWatchRead}
+                    disabled={progressiveMutation.isPending}
+                    className={`mt-4 w-full font-mono text-meta uppercase tracking-[1.4px] border border-ink ${
+                      progressiveMutation.isPending
+                        ? 'bg-paper-dark text-ink-soft cursor-not-allowed'
+                        : 'bg-amber text-ink hover:bg-amber-deep hover:text-paper cursor-pointer'
+                    }`}
+                    style={{ padding: '12px 16px' }}
+                  >
+                    {progressiveMutation.isPending
+                      ? 'LOADING TRAJECTORY…'
+                      : '▸ WATCH IT READ'}
+                  </button>
+                )}
+
+                {progressiveMutation.error && (
+                  <div className="mt-4 bg-red text-paper border border-ink p-3 font-mono text-meta-sm tracking-[1px]">
+                    TRAJECTORY UNAVAILABLE — sidecar likely down. Falling back is fine for the
+                    headline result above.
+                  </div>
+                )}
+
+                {trajectory && (
+                  <ReadingPlayback
+                    steps={trajectory.steps}
+                    totalTokens={trajectory.totalTokens}
+                  />
+                )}
+              </>
             ) : (
               <EmptyResult />
             )}

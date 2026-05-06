@@ -9,7 +9,10 @@ import {
   AnalyzeTextInputSchema,
 } from '../schemas/sentiment.schema.js'
 import { analyzeMovieSentiment } from '../services/sentiment.service.js'
-import { predict as predictText } from '../services/bert-client.js'
+import {
+  predict as predictText,
+  predictProgressive,
+} from '../services/bert-client.js'
 import { analyzeSentiment as simulatorAnalyze } from '../services/bert-simulator.js'
 import { getTopWords, getModelMetrics } from '../services/analytics.service.js'
 import { prisma } from '../lib/prisma.js'
@@ -98,6 +101,16 @@ export const sentimentRouter = router({
         )
         return simulatorAnalyze(input.text)
       }
+    }),
+
+  // Prediction trajectory — runs prefix inference for visualization. No
+  // simulator fallback because the trajectory only makes sense with the real
+  // model; if the sidecar is down we surface the error to the UI so it can
+  // hide the playback button.
+  analyzeProgressive: publicProcedure
+    .input(AnalyzeTextInputSchema)
+    .mutation(async ({ input }) => {
+      return predictProgressive(input.text)
     }),
 
   topReviews: publicProcedure
