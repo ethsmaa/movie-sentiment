@@ -1,0 +1,22 @@
+# Trained model artifacts (250MB+, hosted on HF Hub instead)
+model/
+checkpoints/
+*.bin
+*.safetensors
+*.pt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Notebook outputs that shouldn't be committed
+.ipynb_checkpoints/
+
+# Large eval artifacts (small metrics.json IS committed)
+predictions.csv
+test_results.json
+
+# OS
+.DS_Store
