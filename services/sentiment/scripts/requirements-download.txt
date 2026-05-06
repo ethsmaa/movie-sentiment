@@ -1,0 +1,3 @@
+# Minimal dependencies for the model download script.
+# Phase 3 will add a top-level requirements.txt with full FastAPI runtime deps.
+huggingface_hub==0.25.1
