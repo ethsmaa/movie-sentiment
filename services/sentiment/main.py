@@ -37,6 +37,24 @@ MAX_INPUT_TOKENS = 256
 MAX_BATCH_SIZE = 64
 MAX_TEXT_CHARS = 10_000
 
+# When LOG_INFERENCE is set the service prints a detailed line per inference
+# (text preview, token count, raw logits, softmax probs, winner, latency) so a
+# thesis demo can show what the model is "thinking" in real time. Off by
+# default — keep production logs quiet.
+LOG_INFERENCE = os.environ.get("LOG_INFERENCE", "").lower() in ("1", "true", "yes")
+LOG_TEXT_PREVIEW = 80
+
+
+class InferenceCounter:
+    """Monotonic request counter for log correlation."""
+
+    _value = 0
+
+    @classmethod
+    def next(cls) -> int:
+        cls._value += 1
+        return cls._value
+
 
 class ModelState:
     """Holds loaded model artifacts. Populated by `lifespan` on startup."""
@@ -138,6 +156,7 @@ def run_inference(texts: List[str]) -> List[Prediction]:
         if len(text) > MAX_TEXT_CHARS:
             raise ValueError(f"texts[{i}] exceeds {MAX_TEXT_CHARS} chars")
 
+    started = time.perf_counter()
     inputs = state.tokenizer(
         texts,
         padding=True,
@@ -148,6 +167,8 @@ def run_inference(texts: List[str]) -> List[Prediction]:
 
     logits = state.model(**inputs).logits
     probs = torch.softmax(logits, dim=-1).cpu().numpy()
+    raw_logits = logits.detach().cpu().numpy()
+    elapsed_ms = (time.perf_counter() - started) * 1000
 
     predictions: List[Prediction] = []
     for row in probs:
@@ -160,6 +181,30 @@ def run_inference(texts: List[str]) -> List[Prediction]:
                 p_positive=float(row[1]),
             )
         )
+
+    if LOG_INFERENCE:
+        req_id = InferenceCounter.next()
+        # `input_ids` is a torch tensor of shape (batch, seq_len). The
+        # attention_mask tells us how many tokens were *real* (not padding)
+        # for each text — that is the count we want to surface.
+        token_counts = inputs["attention_mask"].sum(dim=1).tolist()
+        for i, text in enumerate(texts):
+            preview = text.replace("\n", " ").strip()
+            if len(preview) > LOG_TEXT_PREVIEW:
+                preview = preview[:LOG_TEXT_PREVIEW] + "…"
+            pred = predictions[i]
+            logit_neg, logit_pos = float(raw_logits[i][0]), float(raw_logits[i][1])
+            print(
+                f"[infer] req#{req_id} batch={len(texts)} item={i + 1}/{len(texts)}"
+                f"  in {elapsed_ms:.1f}ms\n"
+                f"        text     : \"{preview}\"\n"
+                f"        tokens   : {token_counts[i]} (max {MAX_INPUT_TOKENS})\n"
+                f"        logits   : negative={logit_neg:+.3f}  positive={logit_pos:+.3f}\n"
+                f"        probs    : negative={pred.p_negative:.5f} positive={pred.p_positive:.5f}\n"
+                f"        decision : {pred.label}  (conf {pred.confidence * 100:.2f}%)",
+                flush=True,
+            )
+
     return predictions
 
 
