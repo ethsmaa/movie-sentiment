@@ -36,6 +36,7 @@ LABELS = ("negative", "positive")
 MAX_INPUT_TOKENS = 256
 MAX_BATCH_SIZE = 64
 MAX_TEXT_CHARS = 10_000
+PROGRESSIVE_MAX_STEPS = 30
 
 # When LOG_INFERENCE is set the service prints a detailed line per inference
 # (text preview, token count, raw logits, softmax probs, winner, latency) so a
@@ -133,6 +134,22 @@ class Prediction(BaseModel):
 
 class PredictBatchResponse(BaseModel):
     predictions: List[Prediction]
+
+
+class ProgressiveStep(BaseModel):
+    step: int
+    token_index: int
+    prefix_text: str
+    p_positive: float
+    p_negative: float
+    label: str
+    confidence: float
+
+
+class ProgressiveResponse(BaseModel):
+    total_tokens: int
+    max_input_tokens: int
+    steps: List[ProgressiveStep]
 
 
 class HealthResponse(BaseModel):
@@ -239,3 +256,101 @@ async def predict_batch(req: PredictBatchRequest) -> PredictBatchResponse:
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     return PredictBatchResponse(predictions=predictions)
+
+
+@torch.no_grad()
+def _run_progressive(text: str) -> ProgressiveResponse:
+    """Run inference on every prefix of the tokenized review.
+
+    Tokenizes once, picks ≤ PROGRESSIVE_MAX_STEPS evenly spaced checkpoint
+    lengths across the sequence, batches the prefix tensors into a single
+    forward pass on the model, and returns one ProgressiveStep per checkpoint.
+
+    This is deliberately *prediction trajectory*, not attention. We want to
+    show 'what the model would have decided after reading this much' rather
+    than 'which tokens the model attended to'. Cheaper, more intuitive UI,
+    honest framing.
+    """
+    if state.model is None or state.tokenizer is None or state.device is None:
+        raise RuntimeError("Model not loaded yet")
+
+    encoded = state.tokenizer(
+        text,
+        truncation=True,
+        max_length=MAX_INPUT_TOKENS,
+        return_tensors="pt",
+    )
+    full_ids = encoded["input_ids"][0].tolist()
+    n_tokens = len(full_ids)
+    if n_tokens < 2:
+        raise ValueError("Text is too short to visualize a trajectory")
+
+    # Need at least the [CLS] + 1 real token at every checkpoint.
+    if n_tokens <= PROGRESSIVE_MAX_STEPS + 1:
+        checkpoint_lens = list(range(2, n_tokens + 1))
+    else:
+        # Distribute checkpoints evenly across [2, n_tokens]; always include the
+        # full sequence so the trajectory ends on the canonical prediction.
+        step = max(1, (n_tokens - 1) // PROGRESSIVE_MAX_STEPS)
+        checkpoint_lens = list(range(2, n_tokens + 1, step))
+        if checkpoint_lens[-1] != n_tokens:
+            checkpoint_lens.append(n_tokens)
+
+    pad_id = state.tokenizer.pad_token_id or 0
+    max_len = checkpoint_lens[-1]
+
+    input_ids = torch.tensor(
+        [full_ids[:k] + [pad_id] * (max_len - k) for k in checkpoint_lens],
+        device=state.device,
+    )
+    attention_mask = torch.tensor(
+        [[1] * k + [0] * (max_len - k) for k in checkpoint_lens],
+        device=state.device,
+    )
+
+    started = time.perf_counter()
+    logits = state.model(input_ids=input_ids, attention_mask=attention_mask).logits
+    probs = torch.softmax(logits, dim=-1).cpu().numpy()
+    elapsed_ms = (time.perf_counter() - started) * 1000
+
+    steps: List[ProgressiveStep] = []
+    for i, (k, prob) in enumerate(zip(checkpoint_lens, probs)):
+        prefix_text = state.tokenizer.decode(full_ids[:k], skip_special_tokens=True)
+        winner = int(prob.argmax())
+        steps.append(
+            ProgressiveStep(
+                step=i,
+                token_index=k,
+                prefix_text=prefix_text,
+                p_positive=float(prob[1]),
+                p_negative=float(prob[0]),
+                label=LABELS[winner],
+                confidence=float(prob[winner]),
+            )
+        )
+
+    if LOG_INFERENCE:
+        req_id = InferenceCounter.next()
+        print(
+            f"[infer] req#{req_id} progressive  in {elapsed_ms:.1f}ms  "
+            f"steps={len(steps)} tokens={n_tokens}\n"
+            f"        text     : \"{text[:LOG_TEXT_PREVIEW]}{'…' if len(text) > LOG_TEXT_PREVIEW else ''}\"\n"
+            f"        final    : {steps[-1].label}  (conf {steps[-1].confidence * 100:.2f}%)",
+            flush=True,
+        )
+
+    return ProgressiveResponse(
+        total_tokens=n_tokens,
+        max_input_tokens=MAX_INPUT_TOKENS,
+        steps=steps,
+    )
+
+
+@app.post("/predict/progressive", response_model=ProgressiveResponse)
+async def predict_progressive(req: PredictRequest) -> ProgressiveResponse:
+    try:
+        return _run_progressive(req.text)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
