@@ -5,7 +5,7 @@ import { MovieGrid } from '../components/movies/MovieGrid'
 
 export function VideoClubFooter({
   children,
-  right = 'v1.0 · BERT-SIMULATED',
+  right = 'v1.0 · DISTILBERT-IMDB',
 }: {
   children: React.ReactNode
   right?: string

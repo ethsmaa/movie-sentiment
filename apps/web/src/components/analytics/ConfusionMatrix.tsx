@@ -10,8 +10,8 @@ export function ConfusionMatrix({ data }: ConfusionMatrixProps) {
 
   return (
     <div className="bg-paper-2 border border-ink" style={{ padding: 24 }}>
-      {/* Grid: 110px label col + 3 data cols */}
-      <div style={{ display: 'grid', gridTemplateColumns: '110px repeat(3, 1fr)', gap: 8, alignItems: 'center' }}>
+      {/* Grid: 110px label col + N data cols (N = labels.length, supports binary or multi-class) */}
+      <div style={{ display: 'grid', gridTemplateColumns: `110px repeat(${labels.length}, 1fr)`, gap: 8, alignItems: 'center' }}>
         {/* Header row */}
         <div />
         {labels.map((l) => (
