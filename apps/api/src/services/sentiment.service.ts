@@ -1,7 +1,23 @@
 import { prisma } from '../lib/prisma.js'
 import { analyzeSentiment } from './bert-simulator.js'
+import { predictBatch, type BertResult } from './bert-client.js'
 import { SentimentLabel, type MovieSentimentSummaryDTO } from '@movie-sentiment/shared'
 import type { SentimentLabel as PrismaSentimentLabel } from '@prisma/client'
+
+async function inferReviews(
+  reviews: Array<{ text: string; rating: number | null }>,
+): Promise<BertResult[]> {
+  if (reviews.length === 0) return []
+  try {
+    return await predictBatch(reviews.map((r) => r.text))
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'unknown error'
+    console.warn(
+      `[sentiment] FastAPI sidecar unreachable (${message}); falling back to local simulator`,
+    )
+    return reviews.map((r) => analyzeSentiment(r.text, r.rating ?? undefined))
+  }
+}
 
 export async function analyzeMovieSentiment(
   movieId: string,
@@ -29,9 +45,14 @@ export async function analyzeMovieSentiment(
     include: { analysis: true },
   })
 
+  const inferenceResults = await inferReviews(reviews)
+
   const analysisResults = await Promise.all(
-    reviews.map(async (review) => {
-      const result = analyzeSentiment(review.text, review.rating ?? undefined)
+    reviews.map(async (review, index) => {
+      const result = inferenceResults[index]
+      if (!result) {
+        throw new Error(`Missing inference for review ${review.id}`)
+      }
       const prismaLabel = result.label as unknown as PrismaSentimentLabel
 
       await prisma.sentimentAnalysis.upsert({
