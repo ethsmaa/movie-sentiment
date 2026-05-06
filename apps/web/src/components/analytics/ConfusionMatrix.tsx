@@ -4,78 +4,82 @@ interface ConfusionMatrixProps {
   data: ConfusionMatrixDTO
 }
 
-function cellOpacity(value: number, rowMax: number): number {
-  if (rowMax === 0) return 0
-  return Math.max(0.08, value / rowMax)
-}
-
 export function ConfusionMatrix({ data }: ConfusionMatrixProps) {
   const { matrix, labels } = data
   const rowMaxes = matrix.map((row) => Math.max(...row, 1))
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="text-xs text-text-muted text-center">Predicted →</div>
-      <div className="flex items-start gap-2">
-        <div
-          className="text-xs text-text-muted flex items-center"
-          style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', height: 120 }}
-        >
-          Actual ↓
-        </div>
-        <div className="flex-1 overflow-x-auto">
-          <table className="w-full border-collapse text-xs">
-            <thead>
-              <tr>
-                <th className="w-16 p-1" />
-                {labels.map((l) => (
-                  <th key={l} className="p-1 text-center font-semibold text-text-muted capitalize">
-                    {l}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {matrix.map((row, ri) => (
-                <tr key={labels[ri]}>
-                  <td className="p-1 text-right pr-2 font-semibold text-text-muted capitalize">
-                    {labels[ri]}
-                  </td>
-                  {row.map((val, ci) => {
-                    const isDiagonal = ri === ci
-                    const opacity = cellOpacity(val, rowMaxes[ri] ?? 1)
-                    const bg = isDiagonal
-                      ? `rgba(62, 207, 142, ${opacity})`
-                      : `rgba(229, 72, 77, ${opacity})`
-                    return (
-                      <td key={ci} className="p-1 text-center">
-                        <div
-                          className="flex h-12 w-full items-center justify-center rounded-lg text-sm font-bold transition-all duration-300"
-                          style={{ background: bg }}
-                        >
-                          <span
-                            className={isDiagonal ? 'text-positive' : val > 0 ? 'text-negative' : 'text-text-muted/40'}
-                          >
-                            {val}
-                          </span>
-                        </div>
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+    <div className="bg-paper-2 border border-ink" style={{ padding: 24 }}>
+      {/* Grid: 110px label col + 3 data cols */}
+      <div style={{ display: 'grid', gridTemplateColumns: '110px repeat(3, 1fr)', gap: 8, alignItems: 'center' }}>
+        {/* Header row */}
+        <div />
+        {labels.map((l) => (
+          <div
+            key={l}
+            className="font-mono text-ink-soft text-meta-sm tracking-[1.5px] text-center border-b border-dashed border-ink capitalize"
+            style={{ paddingBottom: 6 }}
+          >
+            PRED · {l.toUpperCase()}
+          </div>
+        ))}
+
+        {/* Data rows */}
+        {matrix.map((row, ri) => {
+          const rowMax = rowMaxes[ri] ?? 1
+          return (
+            <>
+              {/* Row label */}
+              <div
+                key={`lbl-${ri}`}
+                className="font-mono text-ink-soft text-meta-sm tracking-[1.5px] text-right border-r border-dashed border-ink pr-2 capitalize"
+              >
+                ACT · {labels[ri]?.toUpperCase()}
+              </div>
+
+              {/* Cells */}
+              {row.map((v, ci) => {
+                const isDiag = ri === ci
+                const intensity = v === 0 ? 0 : 0.25 + (v / rowMax) * 0.7
+                const bg = isDiag
+                  ? '#3d6b3a'
+                  : v === 0
+                  ? '#f7efd9'
+                  : `rgba(155, 38, 20, ${intensity})`
+
+                return (
+                  <div
+                    key={`cell-${ri}-${ci}`}
+                    className="border border-ink text-center"
+                    style={{ padding: '20px 12px', background: bg }}
+                  >
+                    <div
+                      className="font-display"
+                      style={{
+                        fontSize: 36,
+                        lineHeight: 1,
+                        color: isDiag ? '#f7efd9' : '#1b1612',
+                      }}
+                    >
+                      {v}
+                    </div>
+                  </div>
+                )
+              })}
+            </>
+          )
+        })}
       </div>
-      <div className="flex gap-4 text-xs text-text-muted mt-1">
+
+      {/* Legend */}
+      <div className="flex gap-[18px] mt-4 font-mono text-ink-soft text-meta-sm tracking-[1px]">
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm" style={{ background: 'rgba(62,207,142,0.5)' }} />
-          Correct (diagonal)
+          <span className="w-2.5 h-2.5 border border-ink bg-green" />
+          CORRECT (DIAGONAL)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="inline-block h-3 w-3 rounded-sm" style={{ background: 'rgba(229,72,77,0.3)' }} />
-          Misclassified
+          <span className="w-2.5 h-2.5 border border-ink opacity-50" style={{ background: '#9b2614' }} />
+          MISCLASSIFIED
         </span>
       </div>
     </div>

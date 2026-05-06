@@ -1,70 +1,60 @@
 import type { ClassMetrics } from '@movie-sentiment/shared'
-import { SENTIMENT_COLORS } from '@movie-sentiment/shared'
 
 interface ClassMetricsCardProps {
   metrics: ClassMetrics
 }
 
-function MetricBar({ value, color }: { value: number; color: string }) {
+const CLASS_COLORS: Record<string, string> = {
+  positive: '#3d6b3a',
+  negative: '#9b2614',
+  neutral:  '#8a6a3a',
+}
+
+function MetricRow({ label, value, color }: { label: string; value: number; color: string }) {
+  const pct = Math.round(value * 100)
   return (
-    <div className="flex items-center gap-2">
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-background">
-        <div
-          className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${Math.round(value * 100)}%`, backgroundColor: color }}
-        />
+    <div className="mb-2.5">
+      <div className="flex justify-between font-mono text-meta-sm text-ink-soft mb-1 tracking-[0.5px]">
+        <span>{label}</span>
+        <span className="text-ink font-bold">{pct}%</span>
       </div>
-      <span className="w-10 text-right text-xs font-mono text-text-primary">
-        {(value * 100).toFixed(1)}%
-      </span>
+      <div className="h-2 border border-ink bg-ink/10">
+        <div className="h-full transition-all duration-260" style={{ width: `${pct}%`, background: color }} />
+      </div>
     </div>
   )
 }
 
 export function ClassMetricsCard({ metrics }: ClassMetricsCardProps) {
-  const color = SENTIMENT_COLORS[metrics.label]
+  const color = CLASS_COLORS[metrics.label] ?? '#1b1612'
+  const f1Pct = Math.round(metrics.f1 * 100)
 
   return (
-    <div
-      className="rounded-xl border bg-card/50 p-4 flex flex-col gap-3"
-      style={{ borderColor: `${color}30` }}
-    >
-      <div className="flex items-center justify-between">
-        <span
-          className="text-sm font-bold capitalize px-2.5 py-0.5 rounded-full"
-          style={{ color, background: `${color}18` }}
-        >
+    <div className="border border-ink bg-paper-2">
+      {/* Header strip */}
+      <div
+        className="flex justify-between items-center text-paper"
+        style={{ background: color, padding: '8px 14px' }}
+      >
+        <span className="font-display uppercase text-[22px] leading-none tracking-[1px]">
           {metrics.label}
         </span>
-        <span className="text-xs text-text-muted">
-          n = <span className="font-medium text-text-primary">{metrics.support}</span>
-        </span>
+        <span className="font-mono text-meta-sm tracking-[1px]">n = {metrics.support}</span>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-text-muted">Precision</span>
-          <MetricBar value={metrics.precision} color={color} />
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-text-muted">Recall</span>
-          <MetricBar value={metrics.recall} color={color} />
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-text-muted">F1-Score</span>
-          <MetricBar value={metrics.f1} color={color} />
-        </div>
-      </div>
+      {/* Metrics */}
+      <div style={{ padding: 14 }}>
+        <MetricRow label="Precision" value={metrics.precision} color={color} />
+        <MetricRow label="Recall" value={metrics.recall} color={color} />
+        <MetricRow label="F1-Score" value={metrics.f1} color={color} />
 
-      <div
-        className="mt-1 rounded-lg px-3 py-2 text-center"
-        style={{ background: `${color}10` }}
-      >
-        <span className="text-xs text-text-muted">F1</span>
-        <span className="ml-2 text-lg font-bold" style={{ color }}>
-          {(metrics.f1 * 100).toFixed(1)}
-        </span>
-        <span className="text-xs text-text-muted">%</span>
+        {/* F1 callout */}
+        <div className="flex justify-between items-center bg-ink text-paper mt-3.5" style={{ padding: '8px 12px' }}>
+          <span className="font-mono text-meta-sm tracking-[2px]">F1</span>
+          <span className="font-display text-[24px] leading-none" style={{ color }}>
+            {f1Pct}%
+          </span>
+        </div>
       </div>
     </div>
   )

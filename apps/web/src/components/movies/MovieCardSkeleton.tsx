@@ -1,14 +1,30 @@
+import { TAPE_COLORS } from '../../lib/utils'
+
 export function MovieCardSkeleton() {
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-card">
-      <div className="aspect-[2/3] animate-pulse bg-border" />
-      <div className="flex flex-col gap-2 p-3">
-        <div className="h-4 w-3/4 animate-pulse rounded bg-border" />
-        <div className="h-3 w-1/2 animate-pulse rounded bg-border" />
-        <div className="flex gap-1 mt-1">
-          <div className="h-4 w-12 animate-pulse rounded-full bg-border" />
-          <div className="h-4 w-16 animate-pulse rounded-full bg-border" />
-        </div>
+    <div className="bg-ink border-thin border-ink shadow-vhs-sm" style={{ padding: 8 }}>
+      {/* Stripe band */}
+      <div className="flex h-2 mb-2">
+        {TAPE_COLORS.map((c, i) => (
+          <div key={i} className="flex-1 opacity-50" style={{ background: c }} />
+        ))}
+      </div>
+
+      {/* Poster placeholder */}
+      <div className="relative overflow-hidden" style={{ aspectRatio: '2/3', background: '#2a231e' }}>
+        <div
+          className="absolute inset-0 animate-shimmer"
+          style={{
+            background: 'linear-gradient(90deg, transparent 0%, rgba(239,229,205,0.06) 50%, transparent 100%)',
+            backgroundSize: '200px 100%',
+          }}
+        />
+      </div>
+
+      {/* Label placeholder */}
+      <div className="bg-paper-2 border-thin border-ink mt-2 opacity-70" style={{ padding: '6px 8px' }}>
+        <div className="bg-paper-dark h-3.5 w-3/4 mb-1.5" />
+        <div className="bg-paper-dark h-2 w-1/2" />
       </div>
     </div>
   )

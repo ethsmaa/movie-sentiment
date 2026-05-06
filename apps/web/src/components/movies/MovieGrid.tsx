@@ -1,8 +1,7 @@
 import { useMoviesStore } from '../../store/movies.store'
 import { trpc } from '../../lib/trpc'
-import { MovieCard } from './MovieCard'
+import { VHSTape } from './MovieCard'
 import { MovieCardSkeleton } from './MovieCardSkeleton'
-import { ChevronLeft, ChevronRight, Film } from 'lucide-react'
 
 const LIMIT = 20
 
@@ -18,8 +17,8 @@ export function MovieGrid() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {Array.from({ length: 20 }).map((_, i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-[18px] px-8 pb-[60px]">
+        {Array.from({ length: 8 }).map((_, i) => (
           <MovieCardSkeleton key={i} />
         ))}
       </div>
@@ -28,10 +27,24 @@ export function MovieGrid() {
 
   if (!data || data.items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-        <Film className="h-16 w-16 text-text-muted/30" />
-        <p className="text-lg font-medium text-text-muted">No movies found</p>
-        <p className="text-sm text-text-muted/60">Try adjusting your search or genre filter</p>
+      <div className="flex flex-col items-center justify-center py-24 text-center px-8">
+        <div className="font-display text-ink text-d-s uppercase tracking-[0.5px]">
+          NO TAPES IN STOCK
+        </div>
+        <p className="font-body text-ink-soft mt-3 text-[14px] leading-normal">
+          {filter.search
+            ? `No match for "${filter.search}"`
+            : 'No films found. Try adjusting your filters.'}
+        </p>
+        {(filter.search || filter.genre) && (
+          <button
+            onClick={() => useMoviesStore.getState().resetFilters()}
+            className="font-mono text-ink border border-ink text-meta uppercase tracking-[1.4px] mt-6 bg-transparent cursor-pointer hover:bg-ink hover:text-paper transition-colors duration-120"
+            style={{ padding: '10px 16px' }}
+          >
+            CLEAR FILTERS
+          </button>
+        )}
       </div>
     )
   }
@@ -39,31 +52,41 @@ export function MovieGrid() {
   const totalPages = Math.ceil(data.total / LIMIT)
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-        {data.items.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} />
+    <div className="pb-[60px]">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-[18px] px-8">
+        {data.items.map((movie, i) => (
+          <VHSTape key={movie.id} movie={movie} idx={i} />
         ))}
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex items-center justify-center mt-8">
           <button
             onClick={() => setPage(filter.page - 1)}
             disabled={filter.page === 1}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-text-muted transition-colors hover:border-accent/30 hover:text-text-primary disabled:opacity-40 disabled:cursor-not-allowed"
+            className="font-mono text-ink bg-transparent border border-ink text-xs w-9 h-9 flex items-center justify-center border-r-0 disabled:opacity-30 hover:bg-ink hover:text-paper transition-colors duration-120"
           >
-            <ChevronLeft className="h-4 w-4" />
+            ←
           </button>
-          <span className="text-sm text-text-muted">
-            {filter.page} / {totalPages}
-          </span>
+          {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              onClick={() => setPage(p)}
+              className={`font-mono text-xs w-9 h-9 flex items-center justify-center border border-ink border-r-0 transition-colors duration-120 last:border-r ${
+                p === filter.page
+                  ? 'bg-ink text-paper'
+                  : 'bg-transparent text-ink hover:bg-paper-dark'
+              }`}
+            >
+              {p}
+            </button>
+          ))}
           <button
             onClick={() => setPage(filter.page + 1)}
             disabled={filter.page === totalPages}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-text-muted transition-colors hover:border-accent/30 hover:text-text-primary disabled:opacity-40 disabled:cursor-not-allowed"
+            className="font-mono text-ink bg-transparent border border-ink text-xs w-9 h-9 flex items-center justify-center disabled:opacity-30 hover:bg-ink hover:text-paper transition-colors duration-120"
           >
-            <ChevronRight className="h-4 w-4" />
+            →
           </button>
         </div>
       )}

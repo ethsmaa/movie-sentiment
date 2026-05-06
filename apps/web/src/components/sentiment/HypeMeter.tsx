@@ -1,39 +1,38 @@
-import { hypeScoreToColor, hypeScoreToLabel } from '../../lib/utils'
-import { TrendingUp } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { hypePercentage, hypeLabel } from '../../lib/utils'
 
 interface HypeMeterProps {
   hypeScore: number
 }
 
 export function HypeMeter({ hypeScore }: HypeMeterProps) {
-  const color = hypeScoreToColor(hypeScore)
-  const label = hypeScoreToLabel(hypeScore)
-  const normalized = (hypeScore + 1) / 2
-  const percentage = Math.round(normalized * 100)
+  const barRef = useRef<HTMLDivElement>(null)
+  const percentage = hypePercentage(hypeScore)
+  const label = hypeLabel(percentage)
+
+  useEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+    bar.style.width = '0%'
+    const raf = requestAnimationFrame(() => {
+      bar.style.transition = 'width 260ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+      bar.style.width = `${percentage}%`
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [percentage])
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-5">
-      <div className="flex items-center gap-2">
-        <TrendingUp className="h-4 w-4 text-text-muted" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-          Hype Meter
-        </span>
+    <div className="bg-amber border border-ink relative" style={{ padding: 16 }}>
+      <div className="font-mono text-ink text-meta-xs tracking-[2px] uppercase">Audience Hype</div>
+      <div className="font-display text-ink mt-1" style={{ fontSize: 64, lineHeight: 1 }}>
+        {percentage}
+        <span className="font-display text-ink-soft" style={{ fontSize: 22 }}> /100</span>
       </div>
-      <div className="flex items-end gap-3">
-        <span className="text-4xl font-bold" style={{ color }}>
-          {percentage}
-        </span>
-        <span className="mb-1 text-lg font-medium text-text-muted">/ 100</span>
+      {/* Progress track */}
+      <div className="relative h-1.5 mt-2.5" style={{ background: 'rgba(27,22,18,0.25)' }}>
+        <div ref={barRef} className="absolute inset-y-0 left-0 bg-ink" style={{ width: 0 }} />
       </div>
-      <div className="relative h-3 overflow-hidden rounded-full bg-background">
-        <div
-          className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
-          style={{ width: `${percentage}%`, backgroundColor: color }}
-        />
-      </div>
-      <p className="text-sm font-medium" style={{ color }}>
-        {label}
-      </p>
+      <div className="font-mono text-ink text-meta-xs tracking-[1px] mt-1.5">{label}</div>
     </div>
   )
 }

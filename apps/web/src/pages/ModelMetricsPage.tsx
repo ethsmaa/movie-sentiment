@@ -1,105 +1,155 @@
-import { BarChart3, AlertCircle, Loader2 } from 'lucide-react'
+import { trpc } from '../lib/trpc'
 import { ClassMetricsCard } from '../components/analytics/ClassMetricsCard'
 import { ConfusionMatrix } from '../components/analytics/ConfusionMatrix'
 import { TopWordsPanel } from '../components/analytics/TopWordsPanel'
-import { trpc } from '../lib/trpc'
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col items-center gap-1 rounded-xl border border-border bg-card/50 p-4">
-      <span className="text-2xl font-bold text-accent">{value}</span>
-      <span className="text-xs text-text-muted">{label}</span>
-    </div>
-  )
-}
+import { VideoClubFooter } from './HomePage'
 
 export function ModelMetricsPage() {
-  const metricsQuery = trpc.sentiment.modelMetrics.useQuery({})
-  const topWordsQuery = trpc.sentiment.topWords.useQuery({ limit: 10 })
+  const metricsQ = trpc.sentiment.modelMetrics.useQuery({})
+  const topWordsQ = trpc.sentiment.topWords.useQuery({ limit: 10 })
 
-  const isLoading = metricsQuery.isLoading || topWordsQuery.isLoading
-  const isError = metricsQuery.isError
+  const isLoading = metricsQ.isLoading || topWordsQ.isLoading
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-3 py-24 text-text-muted">
-        <Loader2 className="h-6 w-6 animate-spin" />
-        <span>Loading model metrics...</span>
+      <div className="bg-paper min-h-screen px-8 pt-8">
+        <div className="bg-paper-dark animate-pulse h-16 w-80 mb-6" />
+        <div className="grid grid-cols-4 gap-3.5 mb-8">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="bg-paper-dark animate-pulse" style={{ height: 110 }} />
+          ))}
+        </div>
       </div>
     )
   }
 
-  if (isError || !metricsQuery.data) {
+  if (metricsQ.isError || !metricsQ.data) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-24 text-text-muted">
-        <AlertCircle className="h-8 w-8 text-negative" />
-        <p className="text-sm">Failed to load model metrics. Analyze some movies first.</p>
+      <div className="bg-paper min-h-screen flex flex-col items-center justify-center gap-4">
+        <div className="font-display text-ink text-d-s uppercase tracking-[0.5px]">
+          REEL JAMMED
+        </div>
+        <p className="font-body text-ink-soft text-[14px]">
+          Failed to load model metrics. Analyze some movies first.
+        </p>
       </div>
     )
   }
 
   const { classMetrics, weightedF1, accuracy, confusionMatrix, sampleSize, totalReviews } =
-    metricsQuery.data
+    metricsQ.data
+
+  const accPct = (accuracy * 100).toFixed(1)
+  const f1Pct = (weightedF1 * 100).toFixed(1)
+
+  const qcId = Math.floor(10000 + Math.random() * 90000)
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-10 animate-slide-up">
-      <div className="mb-8 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
-          <BarChart3 className="h-5 w-5 text-accent" />
-        </div>
-        <div>
-          <h1 className="text-xl font-bold text-text-primary">Model Metrics</h1>
-          <p className="text-sm text-text-muted">
-            BERT sentiment classifier performance — ground truth derived from user ratings
-          </p>
-        </div>
-      </div>
+    <main className="bg-paper text-ink min-h-screen">
+      <div className="px-8 pt-8 pb-8">
 
-      {/* Overview stats */}
-      <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="Accuracy" value={`${(accuracy * 100).toFixed(1)}%`} />
-        <StatCard label="Weighted F1" value={`${(weightedF1 * 100).toFixed(1)}%`} />
-        <StatCard label="Evaluated Reviews" value={sampleSize.toLocaleString()} />
-        <StatCard label="Total Reviews" value={totalReviews.toLocaleString()} />
-      </div>
+        {/* ── Page title block ── */}
+        <div
+          className="flex justify-between items-end border-b border-ink pb-5 mb-6"
+        >
+          <div>
+            <div className="font-mono text-red text-meta-sm tracking-[2px] uppercase">
+              QUALITY CONTROL · LAB SHEET
+            </div>
+            <h1
+              className="font-display text-ink uppercase m-0 mt-1.5"
+              style={{ fontSize: 72, lineHeight: 0.95 }}
+            >
+              Model Metrics
+            </h1>
+            <div className="font-serif italic text-ink-soft mt-1.5" style={{ fontSize: 18 }}>
+              BERT sentiment classifier — ground truth derived from user ratings.
+            </div>
+          </div>
 
-      {/* Per-class metrics */}
-      <section className="mb-8">
-        <h2 className="mb-4 text-base font-semibold text-text-primary">
-          Per-Class Metrics
-          <span className="ml-2 text-xs font-normal text-text-muted">
-            (Precision · Recall · F1)
-          </span>
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {classMetrics.map((m) => (
-            <ClassMetricsCard key={m.label} metrics={m} />
+          {/* QC Stamp */}
+          <div
+            className="bg-amber border border-ink font-mono text-ink text-meta-sm tracking-[1.5px] shrink-0"
+            style={{ padding: '10px 16px', transform: 'rotate(2deg)' }}
+          >
+            <div className="border-b border-dashed border-ink pb-1 mb-1">STAMP · APPROVED</div>
+            <div>QC-{qcId}</div>
+          </div>
+        </div>
+
+        {/* ── Headline metrics ── */}
+        <div className="grid gap-3.5 mb-8" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+          {[
+            { label: 'ACCURACY',       value: `${accPct}%`,                 color: '#3d6b3a' },
+            { label: 'WEIGHTED F1',    value: `${f1Pct}%`,                  color: '#e8a23a' },
+            { label: 'EVALUATED',      value: String(sampleSize),           color: '#1b1612' },
+            { label: 'TOTAL REVIEWS',  value: String(totalReviews),         color: '#1b1612' },
+          ].map(({ label, value, color }) => (
+            <div key={label} className="bg-paper-2 border border-ink relative" style={{ padding: 18 }}>
+              {/* Top color stripe */}
+              <div className="absolute top-0 left-0 right-0 h-1" style={{ background: color }} />
+              <div className="font-mono text-ink-soft text-meta-xs tracking-[1.8px] uppercase mt-1">
+                {label}
+              </div>
+              <div className="font-display text-ink mt-1" style={{ fontSize: 56, lineHeight: 1 }}>
+                {value}
+              </div>
+            </div>
           ))}
         </div>
-      </section>
 
-      {/* Confusion matrix */}
-      <section className="mb-8 rounded-xl border border-border bg-card/50 p-5">
-        <h2 className="mb-1 text-base font-semibold text-text-primary">Confusion Matrix</h2>
-        <p className="mb-4 text-xs text-text-muted">
-          Row = actual class (rating ≥7 → positive, ≤3 → negative, 4–6 → neutral)
-          &nbsp;·&nbsp; Column = model prediction
-        </p>
-        <ConfusionMatrix data={confusionMatrix} />
-      </section>
-
-      {/* Global top words */}
-      {topWordsQuery.data && (
-        <section>
-          <h2 className="mb-4 text-base font-semibold text-text-primary">
-            Global Top Words
-            <span className="ml-2 text-xs font-normal text-text-muted">
-              (across all analyzed reviews)
-            </span>
-          </h2>
-          <TopWordsPanel data={topWordsQuery.data} />
+        {/* ── Per-class metrics ── */}
+        <section className="mb-9">
+          <div className="flex items-baseline gap-3 mb-3.5">
+            <div className="font-display text-ink text-[28px] leading-none tracking-[0.5px] uppercase">
+              PER-CLASS METRICS
+            </div>
+            <div className="flex-1 h-px bg-ink opacity-30" />
+            <div className="font-mono text-ink-soft text-meta-sm tracking-[1px]">
+              PRECISION · RECALL · F1
+            </div>
+          </div>
+          <div className="grid gap-3.5" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            {classMetrics.map((m) => (
+              <ClassMetricsCard key={m.label} metrics={m} />
+            ))}
+          </div>
         </section>
-      )}
+
+        {/* ── Confusion matrix ── */}
+        <section className="mb-9">
+          <div className="flex items-baseline gap-3 mb-3.5">
+            <div className="font-display text-ink text-[28px] leading-none tracking-[0.5px] uppercase">
+              CONFUSION MATRIX
+            </div>
+            <div className="flex-1 h-px bg-ink opacity-30" />
+            <div className="font-mono text-ink-soft text-meta-sm tracking-[1px]">
+              ROW = ACTUAL · COL = PREDICTED
+            </div>
+          </div>
+          <ConfusionMatrix data={confusionMatrix} />
+        </section>
+
+        {/* ── Global top words ── */}
+        {topWordsQ.data && (
+          <section>
+            <div className="flex items-baseline gap-3 mb-3.5">
+              <div className="font-display text-ink text-[28px] leading-none tracking-[0.5px] uppercase">
+                GLOBAL TOP WORDS
+              </div>
+              <div className="flex-1 h-px bg-ink opacity-30" />
+              <div className="font-mono text-ink-soft text-meta-sm tracking-[1px]">
+                ACROSS ALL ANALYZED REVIEWS
+              </div>
+            </div>
+            <TopWordsPanel data={topWordsQ.data} />
+          </section>
+        )}
+      </div>
+
+      <VideoClubFooter right="BERT-base-uncased · sim">
+        ★ LAB SHEET CINESENTIMENT/QC-001 ★ INTERNAL USE ONLY ★
+      </VideoClubFooter>
     </main>
   )
 }

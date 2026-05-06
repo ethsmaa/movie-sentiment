@@ -1,6 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Navbar } from './components/layout/Navbar'
+import { VideoClubHeader } from './components/layout/Navbar'
 import { trpc } from './lib/trpc'
 import { queryClient, trpcClient } from './lib/trpc-client'
 import { HomePage } from './pages/HomePage'
@@ -12,8 +12,8 @@ export default function App() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <div className="min-h-screen bg-background">
-            <Navbar />
+          <div className="min-h-screen bg-paper">
+            <VideoClubHeader />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/movie/:id" element={<MovieDetailPage />} />

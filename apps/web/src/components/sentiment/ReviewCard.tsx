@@ -1,35 +1,36 @@
-import type { ReviewWithSentimentDTO } from '@movie-sentiment/shared'
+import type { ReviewWithSentimentDTO, SentimentLabel } from '@movie-sentiment/shared'
 import { getTextSegments } from '@movie-sentiment/shared'
-import { SentimentLabelBadge } from './SentimentLabelBadge'
-import { SENTIMENT_COLORS } from '@movie-sentiment/shared'
-import { User } from 'lucide-react'
 
 interface ReviewCardProps {
   review: ReviewWithSentimentDTO
+  variant?: 'positive' | 'negative'
 }
 
-function HighlightedText({ text }: { text: string }) {
+const LABEL_COLORS: Record<SentimentLabel, { bg: string; text: string; pill: string }> = {
+  positive: { bg: '#3d6b3a', text: '#f7efd9', pill: 'bg-green text-paper-2' },
+  negative: { bg: '#9b2614', text: '#f7efd9', pill: 'bg-red text-paper-2' },
+  neutral:  { bg: '#8a6a3a', text: '#f7efd9', pill: 'bg-kraft text-paper-2' },
+}
+
+function HighlightedText({
+  text,
+  label,
+}: {
+  text: string
+  label: SentimentLabel | undefined
+}) {
   const segments = getTextSegments(text)
+  const highlightBg = label === 'positive' ? '#3d6b3a' : label === 'negative' ? '#9b2614' : '#8a6a3a'
+
   return (
     <span>
       {segments.map((seg, i) => {
-        if (seg.highlight === 'positive') {
+        if (seg.highlight) {
           return (
             <mark
               key={i}
-              className="rounded px-0.5 text-positive"
-              style={{ background: 'rgba(62, 207, 142, 0.15)' }}
-            >
-              {seg.text}
-            </mark>
-          )
-        }
-        if (seg.highlight === 'negative') {
-          return (
-            <mark
-              key={i}
-              className="rounded px-0.5 text-negative"
-              style={{ background: 'rgba(229, 72, 77, 0.15)' }}
+              className="text-paper-2"
+              style={{ background: highlightBg, padding: '0 4px' }}
             >
               {seg.text}
             </mark>
@@ -41,47 +42,44 @@ function HighlightedText({ text }: { text: string }) {
   )
 }
 
-export function ReviewCard({ review }: ReviewCardProps) {
-  const label = review.analysis?.label
-  const confidence = review.analysis?.confidenceScore
-  const borderColor = label ? SENTIMENT_COLORS[label] : '#1E2440'
+export function ReviewCard({ review, variant }: ReviewCardProps) {
+  const label = review.analysis?.label as SentimentLabel | undefined
+  const conf = review.analysis?.confidenceScore
+  const confPct = conf !== undefined ? Math.round(conf * 100) : null
+  const meta = label ? LABEL_COLORS[label] : null
 
   return (
-    <div
-      className="flex flex-col gap-3 rounded-xl border bg-card/50 p-4 transition-all duration-200"
-      style={{ borderColor: `${borderColor}40` }}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-background">
-            <User className="h-3.5 w-3.5 text-text-muted" />
-          </div>
-          <span className="text-sm font-medium text-text-primary">{review.author}</span>
-        </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+    <div className="bg-paper-2 border border-ink relative" style={{ padding: 16 }}>
+      {/* Header row */}
+      <div className="flex justify-between items-center mb-2 font-mono text-meta-sm">
+        <span className="text-ink font-bold tracking-[0.8px]">
+          {review.author}
           {review.rating && (
-            <span className="text-xs text-text-muted">{review.rating.toFixed(1)}/10</span>
+            <span className="text-ink-soft font-normal ml-2">
+              {review.rating.toFixed(1)}/10
+            </span>
           )}
-          {label && <SentimentLabelBadge label={label} />}
-        </div>
+        </span>
+        {meta && label && (
+          <span
+            className={`${meta.pill} font-mono text-meta-xs tracking-[1.2px]`}
+            style={{ padding: '2px 8px' }}
+          >
+            {label.toUpperCase()} · {confPct}%
+          </span>
+        )}
       </div>
-      <p className="line-clamp-4 text-sm leading-relaxed text-text-muted">
-        {label ? <HighlightedText text={review.text} /> : review.text}
+
+      {/* Review body — Playfair serif with opening quote */}
+      <p className="font-serif m-0" style={{ fontSize: 16, lineHeight: 1.5, color: '#1b1612' }}>
+        <span
+          className="font-serif text-red"
+          style={{ fontSize: 32, lineHeight: 0.5, marginRight: 4, verticalAlign: '-0.3em' }}
+        >
+          "
+        </span>
+        {label ? <HighlightedText text={review.text} label={label} /> : review.text}
       </p>
-      {confidence !== undefined && (
-        <div className="flex items-center gap-2">
-          <div className="h-1 flex-1 rounded-full bg-background overflow-hidden">
-            <div
-              className="h-full rounded-full"
-              style={{
-                width: `${Math.round(confidence * 100)}%`,
-                backgroundColor: borderColor,
-              }}
-            />
-          </div>
-          <span className="text-xs text-text-muted">{Math.round(confidence * 100)}% conf.</span>
-        </div>
-      )}
     </div>
   )
 }

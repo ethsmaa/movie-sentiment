@@ -1,66 +1,54 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import { useEffect, useRef } from 'react'
 import type { DistributionDTO } from '@movie-sentiment/shared'
-import { SENTIMENT_COLORS, SentimentLabel } from '@movie-sentiment/shared'
-import { BarChart2 } from 'lucide-react'
+import type { SentimentLabel } from '@movie-sentiment/shared'
 
 interface DistributionChartProps {
   distribution: DistributionDTO
 }
 
+const SENTIMENT_META: Record<SentimentLabel, { label: string; color: string; shortLabel: string }> = {
+  positive: { label: 'Positive', shortLabel: 'POS', color: '#3d6b3a' },
+  negative: { label: 'Negative', shortLabel: 'NEG', color: '#9b2614' },
+  neutral:  { label: 'Neutral',  shortLabel: 'NEU', color: '#8a6a3a' },
+}
+
+function AnimatedBar({ percentage, color }: { percentage: number; color: string }) {
+  const barRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const bar = barRef.current
+    if (!bar) return
+    bar.style.width = '0%'
+    const raf = requestAnimationFrame(() => {
+      bar.style.transition = 'width 260ms cubic-bezier(0.2, 0.8, 0.2, 1)'
+      bar.style.width = `${percentage}%`
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [percentage])
+
+  return (
+    <div className="flex-1 h-3 bg-ink/10">
+      <div ref={barRef} className="h-full" style={{ backgroundColor: color, width: 0 }} />
+    </div>
+  )
+}
+
 export function DistributionChart({ distribution }: DistributionChartProps) {
-  const data = distribution.buckets.map((b) => ({
-    name: b.label.charAt(0).toUpperCase() + b.label.slice(1),
-    value: b.count,
-    percentage: b.percentage,
-    label: b.label as SentimentLabel,
+  const buckets = distribution.buckets.map((b) => ({
+    ...b,
+    meta: SENTIMENT_META[b.label as SentimentLabel],
   }))
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-border bg-card p-5">
-      <div className="flex items-center gap-2">
-        <BarChart2 className="h-4 w-4 text-text-muted" />
-        <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-          Sentiment Distribution
-        </span>
-      </div>
-      <div className="h-48">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={data}
-              cx="50%"
-              cy="50%"
-              innerRadius={50}
-              outerRadius={75}
-              paddingAngle={3}
-              dataKey="value"
-            >
-              {data.map((entry) => (
-                <Cell key={entry.label} fill={SENTIMENT_COLORS[entry.label]} />
-              ))}
-            </Pie>
-            <Tooltip
-              formatter={(value: number, name: string) => [`${value} reviews`, name]}
-              contentStyle={{
-                backgroundColor: '#15192C',
-                border: '1px solid #1E2440',
-                borderRadius: '8px',
-                color: '#F8FAFC',
-              }}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-      <div className="flex flex-col gap-2">
-        {data.map((entry) => (
-          <div key={entry.label} className="flex items-center gap-2">
-            <div
-              className="h-2.5 w-2.5 rounded-full flex-shrink-0"
-              style={{ backgroundColor: SENTIMENT_COLORS[entry.label] }}
-            />
-            <span className="flex-1 text-sm text-text-muted">{entry.name}</span>
-            <span className="text-sm font-semibold text-text-primary">{entry.percentage}%</span>
-            <span className="text-xs text-text-muted">({entry.value})</span>
+    <div className="bg-paper-2 border border-ink" style={{ padding: 16 }}>
+      <div className="font-mono text-ink text-meta-xs tracking-[2px] uppercase">Sentiment Split</div>
+      <div className="flex flex-col gap-2 mt-2.5">
+        {buckets.map((b) => (
+          <div key={b.label} className="flex items-center gap-2 font-mono text-meta-sm">
+            <span className="w-7 text-ink-soft tracking-[1px]">{b.meta.shortLabel}</span>
+            <AnimatedBar percentage={b.percentage} color={b.meta.color} />
+            <span className="text-ink font-bold w-4 text-right">{b.count}</span>
+            <span className="text-ink-soft w-8 text-right">{b.percentage}%</span>
           </div>
         ))}
       </div>
