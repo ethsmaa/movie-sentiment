@@ -72,3 +72,11 @@ export async function getAllGenres(): Promise<string[]> {
   movies.forEach((m) => m.genres.forEach((g) => genreSet.add(g)))
   return Array.from(genreSet).sort()
 }
+
+export async function getCollectionStats(): Promise<{ movieCount: number; reviewCount: number }> {
+  const [movieCount, reviewCount] = await Promise.all([
+    prisma.movie.count(),
+    prisma.review.count(),
+  ])
+  return { movieCount, reviewCount }
+}

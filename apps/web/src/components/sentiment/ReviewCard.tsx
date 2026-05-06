@@ -12,15 +12,17 @@ const LABEL_COLORS: Record<SentimentLabel, { bg: string; text: string; pill: str
   neutral:  { bg: '#8a6a3a', text: '#f7efd9', pill: 'bg-kraft text-paper-2' },
 }
 
-function HighlightedText({
-  text,
-  label,
-}: {
-  text: string
-  label: SentimentLabel | undefined
-}) {
+// Highlight color follows the *word's* lexicon polarity, not the review's
+// overall class. So "stunning" stays green even in a negative review, and
+// "boring" stays red even in a positive one — readers see per-word signal
+// rather than a uniform tint.
+const HIGHLIGHT_COLORS = {
+  positive: '#3d6b3a',
+  negative: '#9b2614',
+} as const
+
+function HighlightedText({ text }: { text: string }) {
   const segments = getTextSegments(text)
-  const highlightBg = label === 'positive' ? '#3d6b3a' : label === 'negative' ? '#9b2614' : '#8a6a3a'
 
   return (
     <span>
@@ -30,7 +32,7 @@ function HighlightedText({
             <mark
               key={i}
               className="text-paper-2"
-              style={{ background: highlightBg, padding: '0 4px' }}
+              style={{ background: HIGHLIGHT_COLORS[seg.highlight], padding: '0 4px' }}
             >
               {seg.text}
             </mark>
@@ -78,7 +80,7 @@ export function ReviewCard({ review, variant }: ReviewCardProps) {
         >
           "
         </span>
-        {label ? <HighlightedText text={review.text} label={label} /> : review.text}
+        <HighlightedText text={review.text} />
       </p>
     </div>
   )
