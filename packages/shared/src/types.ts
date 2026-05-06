@@ -89,7 +89,8 @@ export interface TopWordsDTO {
 }
 
 export interface ClassMetrics {
-  label: SentimentLabel
+  /** String label so the same DTO can carry binary or multi-class metrics */
+  label: string
   precision: number
   recall: number
   f1: number
@@ -100,7 +101,20 @@ export interface ClassMetrics {
 export interface ConfusionMatrixDTO {
   /** Row = actual label, Col = predicted label */
   matrix: number[][]
-  labels: SentimentLabel[]
+  labels: string[]
+}
+
+export interface ModelTrainingInfo {
+  base: string
+  trainedOn: string
+  numLabels: number
+  labels: string[]
+  maxLength: number
+  epochs: number
+  batchSize: number
+  learningRate: number
+  trainedAt: string
+  trainingTimeSeconds: number
 }
 
 export interface ModelMetricsDTO {
@@ -108,7 +122,9 @@ export interface ModelMetricsDTO {
   weightedF1: number
   accuracy: number
   confusionMatrix: ConfusionMatrixDTO
-  /** Reviews that had a rating (used as ground truth) */
+  /** Reviews / samples evaluated on */
   sampleSize: number
   totalReviews: number
+  /** Optional training metadata, present when metrics come from a trained model */
+  modelInfo?: ModelTrainingInfo
 }
