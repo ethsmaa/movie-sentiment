@@ -4,6 +4,7 @@ export function VideoClubHeader() {
   const location = useLocation()
   const isFilms = location.pathname === '/' || location.pathname.startsWith('/movie')
   const isAnalyze = location.pathname === '/analyze'
+  const isTheModel = location.pathname === '/the-model'
   const isMetrics = location.pathname === '/metrics'
 
   return (
@@ -41,6 +42,16 @@ export function VideoClubHeader() {
           }`}
         >
           Analyze
+        </Link>
+        <Link
+          to="/the-model"
+          className={`font-mono text-meta uppercase tracking-[1.4px] transition-colors duration-120 ${
+            isTheModel
+              ? 'text-red underline underline-offset-4'
+              : 'text-ink hover:text-red'
+          }`}
+        >
+          The Model
         </Link>
         <Link
           to="/metrics"
