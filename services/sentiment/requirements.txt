@@ -1,0 +1,8 @@
+# Full runtime dependencies for the FastAPI sentiment service.
+# For the model-only download flow, see scripts/requirements-download.txt.
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+transformers==4.44.2
+torch>=2.2.0
+huggingface_hub==0.25.1
+pydantic==2.9.2
