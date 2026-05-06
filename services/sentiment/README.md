@@ -101,6 +101,21 @@ python3 scripts/download_model.py
 | `required files missing after download` | Hub repo is incomplete; re-train and re-push (Phase 1 notebook) |
 | Slow download (~kbps) | HF is rate-limiting unauthenticated traffic; set `HF_TOKEN` for higher quota |
 
-## What's next (Phase 4)
+## How the rest of the stack uses this
 
-The Hono backend (`apps/api`) drops the BERT simulator in favour of an HTTP client that talks to this service. Set `SENTIMENT_SERVICE_URL=http://127.0.0.1:8000` in `apps/api/.env` and the existing tRPC `sentiment.analyze` procedure will pick it up.
+The Hono backend (`apps/api`) reads `SENTIMENT_SERVICE_URL` (default `http://127.0.0.1:8000`) and routes every `sentiment.analyze` tRPC call through `apps/api/src/services/bert-client.ts`, which:
+
+- Hashes each text with sha256 and caches results in-memory (cap 5000) — so repeated reviews don't hit this service twice.
+- Chunks any batch over 64 texts into sequential `/predict/batch` calls.
+- Maps the binary `p_positive` from this service onto the existing 3-class UI via `POSITIVE_THRESHOLD = 0.65` / `NEGATIVE_THRESHOLD = 0.35`.
+- Falls back to a local lexicon-based simulator with a logged warning if this service is unreachable, so the UI never breaks during local dev.
+
+## Tests
+
+```bash
+source .venv/bin/activate
+pip install -r tests/requirements-test.txt
+pytest tests/ -v
+```
+
+11 tests cover the HTTP surface (validation, label mapping, batch order, 503 fallback, probability normalization). The model itself is stubbed — accuracy is measured at training time and frozen in `ml/metrics.json`.
