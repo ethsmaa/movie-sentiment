@@ -49,18 +49,27 @@ python3 scripts/download_model.py
 pip install -r requirements.txt
 cd ../..
 
-# 4. Start everything (separate terminals)
-# Terminal 1 — sentiment service
-cd services/sentiment && source .venv/bin/activate && uvicorn main:app --port 8000
-
-# Terminal 2 — API
-SENTIMENT_SERVICE_URL=http://127.0.0.1:8000 pnpm --filter @movie-sentiment/api dev
-
-# Terminal 3 — Web
-pnpm --filter @movie-sentiment/web dev
+# 4. Start everything in one terminal
+pnpm dev
 ```
 
-Open http://localhost:5173.
+`pnpm dev` runs `./dev.sh`, which:
+1. Verifies the Docker daemon is reachable (or asks you to open OrbStack).
+2. Brings up the Postgres container and waits for `pg_isready`.
+3. Starts the API, the web dev server, and the FastAPI sentiment sidecar in
+   parallel via `concurrently`, with colored `[api] [web] [ml ]` prefixes.
+
+Ctrl+C drops all three Node/Python processes; Postgres keeps running in the
+background (use `docker compose down` to stop it).
+
+Variants:
+
+```bash
+pnpm dev:no-ml        # skip the FastAPI sidecar (Hono falls back to simulator)
+pnpm dev:simple       # original behaviour, only api + web (no Postgres, no sidecar)
+```
+
+After the launcher reports all three are ready, open http://localhost:5173.
 
 ## ML pipeline
 
