@@ -1,0 +1,16 @@
+# Downloaded model artifacts (~270 MB, hosted on HF Hub)
+model/
+
+# Local secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+
+# OS
+.DS_Store
