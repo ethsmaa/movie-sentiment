@@ -95,7 +95,7 @@ export function SentimentDashboard({ movieId }: SentimentDashboardProps) {
             </div>
             <div className="flex-1 h-px bg-ink opacity-30" />
             <div className="font-mono text-ink-soft text-meta-sm tracking-[1px]">
-              HIGHLIGHTED · BERT EXTRACTED
+              HIGHLIGHTED · LEXICON SIGNAL
             </div>
           </div>
           <TopReviewsPanel topReviews={topReviews} />
