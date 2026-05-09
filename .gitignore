@@ -32,3 +32,6 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 apps/web/test-results/
+
+# Claude Code transient state
+.claude/scheduled_tasks.lock

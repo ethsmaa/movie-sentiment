@@ -56,7 +56,17 @@
       "Bash(npm run *)",
       "Bash(pnpm --filter api dev)",
       "Bash(npx vite *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(python3 *)",
+      "Bash(gh pr *)",
+      "Bash(git checkout *)",
+      "Bash(pnpm --filter @movie-sentiment/api exec tsc --noEmit)",
+      "Bash(pnpm --filter @movie-sentiment/web exec tsc --noEmit)",
+      "Bash(pnpm --filter @movie-sentiment/api test)",
+      "Bash(jq '.[] |= \\( *)",
+      "Bash(mv /tmp/movies.json apps/api/src/data/mock-movies.json)",
+      "Bash(lsof -iTCP:5173 -sTCP:LISTEN -P -n)",
+      "Bash(awk '{print $6,$7,$8,$9}')"
     ]
   }
 }

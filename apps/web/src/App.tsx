@@ -7,6 +7,7 @@ import { AnalyzePage } from './pages/AnalyzePage'
 import { HomePage } from './pages/HomePage'
 import { ModelMetricsPage } from './pages/ModelMetricsPage'
 import { MovieDetailPage } from './pages/MovieDetailPage'
+import { TheModelPage } from './pages/TheModelPage'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/movie/:id" element={<MovieDetailPage />} />
               <Route path="/analyze" element={<AnalyzePage />} />
+              <Route path="/the-model" element={<TheModelPage />} />
               <Route path="/metrics" element={<ModelMetricsPage />} />
             </Routes>
           </div>
