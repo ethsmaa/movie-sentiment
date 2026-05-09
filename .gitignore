@@ -35,3 +35,7 @@ apps/web/test-results/
 
 # Claude Code transient state
 .claude/scheduled_tasks.lock
+
+# Submission archives produced by scripts/make-submission.sh
+build/
+*.zip
