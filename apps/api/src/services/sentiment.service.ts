@@ -4,6 +4,14 @@ import { predictBatch, type BertResult } from './bert-client.js'
 import { SentimentLabel, type MovieSentimentSummaryDTO } from '@movie-sentiment/shared'
 import type { SentimentLabel as PrismaSentimentLabel } from '@prisma/client'
 
+// Strict mode (default ON): if the FastAPI / DistilBERT sidecar is unreachable
+// we refuse to fall back to the lexicon simulator and raise a loud error.
+// This guarantees that every sentiment label stored in the database came from
+// the real fine-tuned model — never the lexicon stand-in.
+//
+// Set BERT_STRICT=false (e.g. in tests) to re-enable the lexicon fallback.
+const STRICT_BERT = process.env.BERT_STRICT !== 'false'
+
 async function inferReviews(
   reviews: Array<{ text: string; rating: number | null }>,
 ): Promise<BertResult[]> {
@@ -12,8 +20,15 @@ async function inferReviews(
     return await predictBatch(reviews.map((r) => r.text))
   } catch (error) {
     const message = error instanceof Error ? error.message : 'unknown error'
+    if (STRICT_BERT) {
+      throw new Error(
+        `[sentiment] FastAPI sidecar unreachable (${message}). ` +
+          `BERT_STRICT is on — refusing to fall back to the lexicon simulator. ` +
+          `Start the sidecar (services/sentiment) or set BERT_STRICT=false to allow fallback.`,
+      )
+    }
     console.warn(
-      `[sentiment] FastAPI sidecar unreachable (${message}); falling back to local simulator`,
+      `[sentiment] FastAPI sidecar unreachable (${message}); falling back to local simulator (BERT_STRICT=false)`,
     )
     return reviews.map((r) => analyzeSentiment(r.text, r.rating ?? undefined))
   }

@@ -4,6 +4,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    env: {
+      // Tests don't run the real FastAPI sidecar. Allow the simulator
+      // fallback so unit tests stay deterministic and offline.
+      BERT_STRICT: 'false',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
