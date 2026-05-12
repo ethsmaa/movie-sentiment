@@ -55,6 +55,11 @@ rsync -a \
   --exclude='**/.env' \
   --exclude='.claude/scheduled_tasks.lock' \
   --exclude='scripts/make-submission.sh' \
+  --exclude='docs/final_report/main.md' \
+  --exclude='docs/final_report/main.tex' \
+  --exclude='docs/final_report/references.bib' \
+  --exclude='docs/final_report/README.md' \
+  --exclude='docs/final_report/parts/' \
   ./ "$STAGING_DIR/"
 
 echo "▸ Stripping AI-tool comments from .gitignore…"
