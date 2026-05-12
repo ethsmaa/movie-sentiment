@@ -78,6 +78,30 @@ if [[ $LEAKS -eq 1 ]]; then
   exit 1
 fi
 
+echo "▸ Looking for the final PDF report to bundle…"
+PDF_CANDIDATES=(
+  "$ROOT_DIR/docs/final_report/${BASE_NAME}_FINAL_REPORT.pdf"
+  "$HOME/Downloads/${BASE_NAME}_FINAL_REPORT.pdf"
+  "$ROOT_DIR/${BASE_NAME}_FINAL_REPORT.pdf"
+)
+PDF_FOUND=""
+for candidate in "${PDF_CANDIDATES[@]}"; do
+  if [[ -f "$candidate" ]]; then
+    PDF_FOUND="$candidate"
+    break
+  fi
+done
+
+if [[ -n "$PDF_FOUND" ]]; then
+  echo "  found: $PDF_FOUND"
+  mkdir -p "$STAGING_DIR/docs/final_report"
+  cp "$PDF_FOUND" "$STAGING_DIR/docs/final_report/${BASE_NAME}_FINAL_REPORT.pdf"
+else
+  echo "  WARN: no final report PDF found. Looked at:"
+  printf '         %s\n' "${PDF_CANDIDATES[@]}"
+  echo "         The archive will ship without the PDF."
+fi
+
 echo "▸ Recording submission metadata…"
 cat > "$STAGING_DIR/SUBMISSION.txt" <<EOF
 Submission: $BASE_NAME
