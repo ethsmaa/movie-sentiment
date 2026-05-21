@@ -66,7 +66,23 @@
       "Bash(jq '.[] |= \\( *)",
       "Bash(mv /tmp/movies.json apps/api/src/data/mock-movies.json)",
       "Bash(lsof -iTCP:5173 -sTCP:LISTEN -P -n)",
-      "Bash(awk '{print $6,$7,$8,$9}')"
+      "Bash(awk '{print $6,$7,$8,$9}')",
+      "Bash(chmod +x /Users/esmaoruc/movie-sentiment/scripts/make-submission.sh)",
+      "Bash(/Users/esmaoruc/movie-sentiment/scripts/make-submission.sh)",
+      "Bash(unzip -l /Users/esmaoruc/movie-sentiment/build/2022510140_2022510014.zip)",
+      "Bash(/Users/esmaoruc/movie-sentiment/services/sentiment/.venv/bin/python -c \"import matplotlib; print\\(matplotlib.__version__\\)\")",
+      "Bash(/Users/esmaoruc/movie-sentiment/services/sentiment/.venv/bin/pip install *)",
+      "Bash(/Users/esmaoruc/movie-sentiment/services/sentiment/.venv/bin/python *)",
+      "Bash(./scripts/make-submission.sh)",
+      "Bash(open /Users/esmaoruc/movie-sentiment/docs/final_report/parts/CineSentiment_Presentation.pptx)",
+      "Read(//private/tmp/**)",
+      "Bash(pdftotext -layout \"/Users/esmaoruc/Downloads/2022510140_2022510014_FINAL_REPORT \\(1\\).pdf\" report.txt)",
+      "Bash(brew list *)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//usr/local/bin/**)",
+      "Bash(pip3 install *)",
+      "Bash(git check-ignore *)",
+      "Bash(grep -E \"\\\\.env$|\\\\.env\\\\.\")"
     ]
   }
 }
